@@ -47,11 +47,13 @@ def generate_launch_description():
     ])
     robot_description = {"robot_description": robot_description_content}
 
+    # Load robot controllers
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[robot_description, robot_controllers],
         output="screen",
+        # arguments=["--ros-args", "--log-level", "debug"],
     )
     robot_state_pub_node = Node(
         package="robot_state_publisher",
@@ -78,20 +80,39 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["imu_sensor_broadcaster", "--controller-manager", "/controller_manager"],
+        parameters=[robot_controllers],
     )
 
     mecanum_drive_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["mecanum_drive_controller", "--controller-manager", "/controller_manager"],
+        parameters=[robot_controllers],
     )
 
-    # Delay rviz start after `joint_state_broadcaster`
-    delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=joint_state_broadcaster_spawner,
-            on_exit=[rviz_node],
-        ) 
+    diff_drive_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["diff_drive_controller", "--controller-manager", "/controller_manager"],
+    )
+
+    # Teleoperation node
+    game_controller_node = Node(
+        package="joy",
+        executable="game_controller_node",
+        name="game_controller_node",
+        output="screen",
+    )
+
+    teleop_node = Node(
+        package="teleop_twist_joy",
+        executable="teleop_node",
+        name="teleop_twist_joy_node",
+        output="screen",
+        parameters=[robot_controllers],
+        remappings=[
+            ("/cmd_vel", "/diff_drive_controller/cmd_vel"),
+        ],
     )
 
     nodes = [
@@ -99,8 +120,10 @@ def generate_launch_description():
         robot_state_pub_node,
         joint_state_broadcaster_spawner,
         imu_broadcaster_spawner,
-        mecanum_drive_controller_spawner,
-        delay_rviz_after_joint_state_broadcaster_spawner,
+        # mecanum_drive_controller_spawner,
+        diff_drive_controller_spawner,
+        teleop_node, game_controller_node,
+        rviz_node
     ]
 
     arguments = [

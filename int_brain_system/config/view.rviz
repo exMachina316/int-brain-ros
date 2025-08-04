@@ -7,9 +7,8 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1/Frames1
-        - /RobotModel1
-        - /Imu1
         - /Imu1/Axes properties1
+        - /Odometry1/Shape1
       Splitter Ratio: 0.5
     Tree Height: 627
   - Class: rviz_common/Selection
@@ -80,6 +79,8 @@ Visualization Manager:
           Value: true
         imu_link:
           Value: true
+        odom:
+          Value: true
         rear_left_coupler:
           Value: true
         rear_left_mecanum_wheel:
@@ -102,30 +103,31 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        base_footprint:
-          base_link:
-            front_left_motor_chassis:
-              front_left_motor_shaft:
-                front_left_coupler:
-                  front_left_mecanum_wheel:
-                    {}
-            front_right_motor_chassis:
-              front_right_motor_shaft:
-                front_right_coupler:
-                  front_right_mecanum_wheel:
-                    {}
-            imu_link:
-              {}
-            rear_left_motor_chassis:
-              rear_left_motor_shaft:
-                rear_left_coupler:
-                  rear_left_mecanum_wheel:
-                    {}
-            rear_right_motor_chassis:
-              rear_right_motor_shaft:
-                rear_right_coupler:
-                  rear_right_mecanum_wheel:
-                    {}
+        odom:
+          base_footprint:
+            base_link:
+              front_left_motor_chassis:
+                front_left_motor_shaft:
+                  front_left_coupler:
+                    front_left_mecanum_wheel:
+                      {}
+              front_right_motor_chassis:
+                front_right_motor_shaft:
+                  front_right_coupler:
+                    front_right_mecanum_wheel:
+                      {}
+              imu_link:
+                {}
+              rear_left_motor_chassis:
+                rear_left_motor_shaft:
+                  rear_left_coupler:
+                    rear_left_mecanum_wheel:
+                      {}
+              rear_right_motor_chassis:
+                rear_right_motor_shaft:
+                  rear_right_coupler:
+                    rear_right_mecanum_wheel:
+                      {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -275,10 +277,49 @@ Visualization Manager:
         Value: /imu_sensor_broadcaster/imu
       Value: true
       fixed_frame_orientation: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz_default_plugins/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 100
+      Name: Odometry
+      Position Tolerance: 0.10000000149011612
+      Shape:
+        Alpha: 0.4000000059604645
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 255; 25; 0
+        Head Length: 0.019999999552965164
+        Head Radius: 0.019999999552965164
+        Shaft Length: 0.10000000149011612
+        Shaft Radius: 0.009999999776482582
+        Value: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /diff_drive_controller/odom
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_footprint
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -321,7 +362,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.7681893110275269
+      Distance: 2.33683705329895
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -336,10 +377,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.49520283937454224
+      Pitch: 0.5602027773857117
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 2.7423670291900635
+      Yaw: 2.9073679447174072
     Saved: ~
 Window Geometry:
   Displays:

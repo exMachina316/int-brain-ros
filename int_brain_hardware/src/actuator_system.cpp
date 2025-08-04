@@ -87,7 +87,7 @@ namespace int_brain_hardware
     }
 
     // Add IMU state interfaces
-    for (auto &sensor: info_.sensors)
+    for (auto &sensor : info_.sensors)
     {
       if (sensor.name == "imu_sensor")
       {
@@ -130,7 +130,7 @@ namespace int_brain_hardware
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &motors[i].vel_));
+          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &motors[i].rpm_desired_));
     }
 
     return command_interfaces;
@@ -235,24 +235,24 @@ namespace int_brain_hardware
     std::vector<int64_t> encoder_positions;
     if (comms_.req_data(REQUEST_ENCODER_POSITIONS, encoder_positions) != 0)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read encoder positions");
-        return hardware_interface::return_type::ERROR;
+      RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read encoder positions");
+      return hardware_interface::return_type::ERROR;
     }
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-        motors[i].pos_ = encoder_positions[i];
+      motors[i].pos_ = encoder_positions[i];
     }
 
     // Read encoder velocities
     std::vector<float> encoder_velocities;
     if (comms_.req_data(REQUEST_ENCODER_VELOCITIES, encoder_velocities) != 0)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read encoder velocities");
-        return hardware_interface::return_type::ERROR;
+      RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read encoder velocities");
+      return hardware_interface::return_type::ERROR;
     }
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-        motors[i].vel_ = encoder_velocities[i];
+      motors[i].vel_ = encoder_velocities[i];
     }
 
     // // Read motor currents
@@ -291,8 +291,13 @@ namespace int_brain_hardware
     std::vector<float> motor_commands;
     for (const auto &motor : motors)
     {
-      motor_commands.push_back(motor.vel_);
+      motor_commands.push_back(motor.rpm_desired_);
+      RCLCPP_DEBUG(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Writing motor commands: %s",
+          std::to_string(motor.rpm_desired_).c_str());
     }
+
     if (comms_.send_data(MOTOR_DESIRED_RPMS, motor_commands) != 0)
     {
       RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to write motor commands");

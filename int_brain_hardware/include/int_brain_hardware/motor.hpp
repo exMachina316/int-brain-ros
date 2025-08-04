@@ -11,13 +11,15 @@ public:
     int enc_;
     double pos_;
     double vel_;
+    double rpm_desired_;
     double current_;
-    double min_effort_, max_effort_;
 
     Motor() = default;
 
     Motor(const std::string name)
-        : name_(name),  enc_(0.0), pos_(0.0), vel_(0.0),
+        : name_(name),
+          enc_(0.0), pos_(0.0), vel_(0.0),
+          rpm_desired_(30.0),
           current_(0.0) {}
 
     void setup(const std::string &name)
