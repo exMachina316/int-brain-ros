@@ -4,7 +4,7 @@ from launch import LaunchDescription
 from launch.actions import RegisterEventHandler, DeclareLaunchArgument
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, PythonExpression
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -17,9 +17,20 @@ def generate_launch_description():
 
     rviz_arg = DeclareLaunchArgument("rviz", default_value="true", 
                                      description="Launch RViz2 with the robot model and controllers")
+    drive_type_arg = DeclareLaunchArgument(
+        "drive_type",
+        default_value="mecanum",
+        description="Select drive type: 'mecanum' or 'diff'"
+    )
+    debug_arg = DeclareLaunchArgument(
+        "debug", default_value="false",
+        description="Enable debug logging for nodes"
+    )
 
     # Launch Configurations to be used by nodes
     rviz = LaunchConfiguration("rviz")
+    drive_type = LaunchConfiguration("drive_type")
+    debug = LaunchConfiguration("debug")
     rviz_config_file = LaunchConfiguration("rviz_config_file", 
                             default=PathJoinSubstitution([
                                 int_brain_system_pkg_share, 'config', 'view.rviz'
@@ -53,7 +64,15 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[robot_description, robot_controllers],
         output="screen",
+        remappings=[
+            ("/mecanum_drive_controller/reference", "/cmd_vel"),
+            ("/diff_drive_controller/reference", "/cmd_vel"),
+        ],
         # arguments=["--ros-args", "--log-level", "debug"],
+        arguments=[
+            "--ros-args", "--log-level", 
+            PythonExpression(["'debug' if '", debug, "' == 'true' else 'info'"])
+        ],
     )
     robot_state_pub_node = Node(
         package="robot_state_publisher",
@@ -88,12 +107,14 @@ def generate_launch_description():
         executable="spawner",
         arguments=["mecanum_drive_controller", "--controller-manager", "/controller_manager"],
         parameters=[robot_controllers],
+        condition=IfCondition(PythonExpression(["'", drive_type, "' == 'mecanum'"])),
     )
 
     diff_drive_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["diff_drive_controller", "--controller-manager", "/controller_manager"],
+        condition=IfCondition(PythonExpression(["'", drive_type, "' == 'diff'"])),
     )
 
     # Teleoperation node
@@ -110,9 +131,6 @@ def generate_launch_description():
         name="teleop_twist_joy_node",
         output="screen",
         parameters=[robot_controllers],
-        remappings=[
-            ("/cmd_vel", "/diff_drive_controller/cmd_vel"),
-        ],
     )
 
     nodes = [
@@ -120,14 +138,16 @@ def generate_launch_description():
         robot_state_pub_node,
         joint_state_broadcaster_spawner,
         imu_broadcaster_spawner,
-        # mecanum_drive_controller_spawner,
+        mecanum_drive_controller_spawner,
         diff_drive_controller_spawner,
         teleop_node, game_controller_node,
         rviz_node
     ]
 
     arguments = [
-        rviz_arg
+        rviz_arg,
+        drive_type_arg,
+        debug_arg
     ]
 
     return LaunchDescription(arguments+nodes)

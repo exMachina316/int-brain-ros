@@ -79,8 +79,6 @@ Visualization Manager:
           Value: true
         imu_link:
           Value: true
-        odom:
-          Value: true
         rear_left_coupler:
           Value: true
         rear_left_mecanum_wheel:
@@ -103,31 +101,30 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        odom:
-          base_footprint:
-            base_link:
-              front_left_motor_chassis:
-                front_left_motor_shaft:
-                  front_left_coupler:
-                    front_left_mecanum_wheel:
-                      {}
-              front_right_motor_chassis:
-                front_right_motor_shaft:
-                  front_right_coupler:
-                    front_right_mecanum_wheel:
-                      {}
-              imu_link:
-                {}
-              rear_left_motor_chassis:
-                rear_left_motor_shaft:
-                  rear_left_coupler:
-                    rear_left_mecanum_wheel:
-                      {}
-              rear_right_motor_chassis:
-                rear_right_motor_shaft:
-                  rear_right_coupler:
-                    rear_right_mecanum_wheel:
-                      {}
+        base_footprint:
+          base_link:
+            front_left_motor_chassis:
+              front_left_motor_shaft:
+                front_left_coupler:
+                  front_left_mecanum_wheel:
+                    {}
+            front_right_motor_chassis:
+              front_right_motor_shaft:
+                front_right_coupler:
+                  front_right_mecanum_wheel:
+                    {}
+            imu_link:
+              {}
+            rear_left_motor_chassis:
+              rear_left_motor_shaft:
+                rear_left_coupler:
+                  rear_left_mecanum_wheel:
+                    {}
+            rear_right_motor_chassis:
+              rear_right_motor_shaft:
+                rear_right_coupler:
+                  rear_right_mecanum_wheel:
+                    {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -319,7 +316,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: odom
+    Fixed Frame: base_footprint
     Frame Rate: 30
   Name: root
   Tools:
