@@ -7,6 +7,7 @@
             <param name="device_addr">/dev/int-brain-315936583034</param>
             <param name="baud_rate">230400</param>
             <param name="timeout_ms">500</param>
+            <param name="is_feedforward">$(arg is_feedforward)</param>
         </hardware>
 
         <joint name="front_left_shaft_joint">

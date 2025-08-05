@@ -32,6 +32,7 @@ namespace int_brain_hardware
       float loop_rate = 0.0;
       int baud_rate = 0;
       int timeout_ms = 0;
+      bool is_feedforward_ = false;
     };
 
   public:

@@ -28,6 +28,7 @@ namespace int_brain_hardware
     cfg_.device_addr = info_.hardware_parameters["device_addr"];
     cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
     cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
+    cfg_.is_feedforward_ = info_.hardware_parameters["is_feedforward"] == "true" ? true : false;
 
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
@@ -199,7 +200,7 @@ namespace int_brain_hardware
   }
 
   hardware_interface::return_type IntBrainHardware::read(
-      const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+      const rclcpp::Time & /*time*/, const rclcpp::Duration &period)
   {
     if (!comms_.connected())
     {
@@ -240,7 +241,14 @@ namespace int_brain_hardware
     }
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-      motors[i].pos_ = encoder_positions[i];
+      if (cfg_.is_feedforward_)
+      {
+        motors[i].pos_ += motors[i].vel_ * period.seconds();
+      }
+      else
+      {
+        motors[i].pos_ = encoder_positions[i];
+      }
     }
 
     // Read encoder velocities
@@ -252,7 +260,14 @@ namespace int_brain_hardware
     }
     for (size_t i = 0; i < info_.joints.size(); ++i)
     {
-      motors[i].vel_ = encoder_velocities[i];
+      if (cfg_.is_feedforward_)
+      {
+        motors[i].vel_ = motors[i].rpm_desired_;
+      }
+      else
+      {
+        motors[i].vel_ = encoder_velocities[i];
+      }
     }
 
     // // Read motor currents

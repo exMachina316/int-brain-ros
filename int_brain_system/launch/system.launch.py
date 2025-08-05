@@ -26,10 +26,15 @@ def generate_launch_description():
         "debug", default_value="false",
         description="Enable debug logging for nodes"
     )
+    is_feedforward_arg = DeclareLaunchArgument(
+        "is_feedforward", default_value="false",
+        description="Enable feedforward control for the robot"
+    )
 
     # Launch Configurations to be used by nodes
     rviz = LaunchConfiguration("rviz")
     drive_type = LaunchConfiguration("drive_type")
+    is_feedforward = LaunchConfiguration("is_feedforward")
     debug = LaunchConfiguration("debug")
     rviz_config_file = LaunchConfiguration("rviz_config_file", 
                             default=PathJoinSubstitution([
@@ -55,6 +60,7 @@ def generate_launch_description():
         'xacro ', xacro_path,
         ' sim:=', 'false',
         ' controllers_yaml:=', robot_controllers,
+        ' is_feedforward:=', PythonExpression(["'", is_feedforward, "'"])
     ])
     robot_description = {"robot_description": robot_description_content}
 
@@ -129,7 +135,7 @@ def generate_launch_description():
 
     arguments = [
         rviz_arg,
-        drive_type_arg,
+        drive_type_arg, is_feedforward_arg,
         debug_arg
     ]
 

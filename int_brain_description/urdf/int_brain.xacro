@@ -3,6 +3,7 @@
 
   <xacro:arg name="controllers_yaml" default="" />
   <xacro:arg name="sim" default="true" />
+  <xacro:arg name="is_feedforward" default="false" />
 
   <xacro:include filename="$(find int_brain_description)/urdf/macros.xacro" />
   <xacro:include filename="$(find int_brain_description)/urdf/materials.xacro" />

@@ -4,9 +4,9 @@ teleop_twist_joy_node:
     enable_turbo_button: 0
     axis_linear:
       x: 1
-      y: 2
+      y: 0
     axis_angular:
-      yaw: 0
+      yaw: 2
 
     scale_angular:
       yaw: 1.0
@@ -18,6 +18,7 @@ teleop_twist_joy_node:
       yaw: 2.0
     scale_linear_turbo:
       x: 1.0
+      y: 1.0
 
     inverted_reverse: true
     publish_stamped_twist: true
