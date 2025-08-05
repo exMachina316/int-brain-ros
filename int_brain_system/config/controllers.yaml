@@ -31,7 +31,7 @@ mecanum_drive_controller:
     rear_right_wheel_command_joint_name: rear_right_shaft_joint
 
     use_stamped_vel: false
-    in_chained_mode: false
+    enable_odom_tf: true
 
     kinematics:
       wheels_radius: 0.04
@@ -63,27 +63,3 @@ diff_drive_controller:
 
     cmd_vel_timeout: 0.5 # seconds
     velocity_rolling_window_size: 10
-
-teleop_twist_joy_node:
-  ros__parameters:
-    require_enable_button: false
-    enable_turbo_button: 0
-    axis_linear:
-      x: 1
-      y: 2
-    axis_angular:
-      yaw: 0
-
-    scale_angular:
-      yaw: 1.0
-    scale_linear:
-      x: 0.5
-      y: 0.5
-    
-    scale_angular_turbo:
-      yaw: 2.0
-    scale_linear_turbo:
-      x: 1.0
-
-    inverted_reverse: true
-    publish_stamped_twist: true

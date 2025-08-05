@@ -67,8 +67,8 @@ def generate_launch_description():
         remappings=[
             ("/mecanum_drive_controller/reference", "/cmd_vel"),
             ("/diff_drive_controller/reference", "/cmd_vel"),
+            ("/mecanum_drive_controller/tf_odometry", "/tf"),
         ],
-        # arguments=["--ros-args", "--log-level", "debug"],
         arguments=[
             "--ros-args", "--log-level", 
             PythonExpression(["'debug' if '", debug, "' == 'true' else 'info'"])
@@ -117,22 +117,6 @@ def generate_launch_description():
         condition=IfCondition(PythonExpression(["'", drive_type, "' == 'diff'"])),
     )
 
-    # Teleoperation node
-    game_controller_node = Node(
-        package="joy",
-        executable="game_controller_node",
-        name="game_controller_node",
-        output="screen",
-    )
-
-    teleop_node = Node(
-        package="teleop_twist_joy",
-        executable="teleop_node",
-        name="teleop_twist_joy_node",
-        output="screen",
-        parameters=[robot_controllers],
-    )
-
     nodes = [
         control_node,
         robot_state_pub_node,
@@ -140,7 +124,6 @@ def generate_launch_description():
         imu_broadcaster_spawner,
         mecanum_drive_controller_spawner,
         diff_drive_controller_spawner,
-        teleop_node, game_controller_node,
         rviz_node
     ]
 
