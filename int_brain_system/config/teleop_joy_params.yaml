@@ -22,3 +22,8 @@ teleop_twist_joy_node:
 
     inverted_reverse: true
     publish_stamped_twist: true
+
+imu_feedback_node:
+  ros__parameters:
+    alpha: 1.0
+    mid_point: 5.0

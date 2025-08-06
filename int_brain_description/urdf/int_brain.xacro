@@ -42,12 +42,40 @@
     </collision>
   </link>
 
+  <link name="pcb_link">
+    <inertial>
+      <origin xyz="0 0 -0.001" rpy="0 0 0" />
+      <mass value="0.02" />
+      <inertia ixx="1e-05" iyy="1e-05" izz="1e-05" ixy="0.0" iyz="0.0" ixz="0.0" />
+    </inertial>
+    <visual>
+      <origin xyz="-0.1 0.06 -0.001" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file://$(find int_brain_description)/meshes/int-brain-pcb.dae"
+          scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.1 0.06 -0.001" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file://$(find int_brain_description)/meshes/int-brain-pcb.dae"
+          scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="pcb_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="pcb_link" />
+    <origin xyz="0 0 0.01" rpy="0 0 0" />
+  </joint>
+
   <link name="imu_link" />
 
   <joint name="imu_joint" type="fixed">
-    <parent link="base_link" />
+    <parent link="pcb_link" />
     <child link="imu_link" />
-    <origin xyz="0 0 0.061" rpy="3.1414 0 1.5707" />
+    <origin xyz="-0.0118 -0.0127 0" rpy="0 3.1414 -1.5707" />
   </joint>
 
   <joint name="base_footprint_to_base_link" type="fixed">

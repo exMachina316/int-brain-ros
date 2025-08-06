@@ -50,6 +50,14 @@ def generate_launch_description():
         ]
     )
 
+    ekf_params = PathJoinSubstitution(
+        [
+            int_brain_system_pkg_share, 
+            "config",
+            "ekf.yaml"
+        ]
+    )
+
     # Path to the Xacro file
     xacro_path = PathJoinSubstitution([
         int_brain_description_pkg_share, 'urdf', 'int_brain.xacro'
@@ -72,8 +80,10 @@ def generate_launch_description():
         output="screen",
         remappings=[
             ("/mecanum_drive_controller/reference", "/cmd_vel"),
-            ("/diff_drive_controller/reference", "/cmd_vel"),
+            ("/diff_drive_controller/cmd_vel", "/cmd_vel"),
             ("/mecanum_drive_controller/tf_odometry", "/tf"),
+            ("/mecanum_drive_controller/odometry", "/int_brain/odom"),
+            ("/diff_drive_controller/odom", "/int_brain/odom"),
         ],
         arguments=[
             "--ros-args", "--log-level", 
@@ -123,6 +133,14 @@ def generate_launch_description():
         condition=IfCondition(PythonExpression(["'", drive_type, "' == 'diff'"])),
     )
 
+    robot_localization = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[ekf_params, robot_description],
+    )
+
     nodes = [
         control_node,
         robot_state_pub_node,
@@ -130,6 +148,7 @@ def generate_launch_description():
         imu_broadcaster_spawner,
         mecanum_drive_controller_spawner,
         diff_drive_controller_spawner,
+        # robot_localization,
         rviz_node
     ]
 

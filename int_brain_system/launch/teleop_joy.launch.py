@@ -26,8 +26,15 @@ def generate_launch_description():
         name='game_controller_node',
     )
 
+    imu_feedback_node = Node(
+        package='int_brain_system',
+        executable='imu_feedback_node',
+        name='imu_feedback_node',
+        parameters=[teleop_joy_params],
+    )
+
     nodes = [
-        teleop_node, game_controller_node
+        teleop_node, game_controller_node, imu_feedback_node
     ]
 
     return LaunchDescription(nodes)

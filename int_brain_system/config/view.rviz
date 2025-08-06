@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1/Frames1
-        - /Imu1/Axes properties1
         - /Odometry1/Shape1
       Splitter Ratio: 0.5
     Tree Height: 627
@@ -81,6 +80,8 @@ Visualization Manager:
           Value: true
         odom:
           Value: true
+        pcb_link:
+          Value: true
         rear_left_coupler:
           Value: true
         rear_left_mecanum_wheel:
@@ -116,8 +117,9 @@ Visualization Manager:
                   front_right_coupler:
                     front_right_mecanum_wheel:
                       {}
-              imu_link:
-                {}
+              pcb_link:
+                imu_link:
+                  {}
               rear_left_motor_chassis:
                 rear_left_motor_shaft:
                   rear_left_coupler:
@@ -201,6 +203,11 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        pcb_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         rear_left_coupler:
           Alpha: 1
           Show Axes: false
@@ -249,34 +256,6 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Acceleration properties:
-        Acc. vector alpha: 1
-        Acc. vector color: 255; 0; 0
-        Acc. vector scale: 1
-        Derotate acceleration: true
-        Enable acceleration: false
-      Axes properties:
-        Axes scale: 0.10000000149011612
-        Enable axes: true
-      Box properties:
-        Box alpha: 1
-        Box color: 255; 0; 0
-        Enable box: false
-        x_scale: 1
-        y_scale: 1
-        z_scale: 1
-      Class: rviz_imu_plugin/Imu
-      Enabled: true
-      Name: Imu
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /imu_sensor_broadcaster/imu
-      Value: true
-      fixed_frame_orientation: true
     - Angle Tolerance: 0.10000000149011612
       Class: rviz_default_plugins/Odometry
       Covariance:
@@ -314,7 +293,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /mecanum_drive_controller/odometry
+        Value: /int_brain/odom
       Value: true
   Enabled: true
   Global Options:
@@ -362,25 +341,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.33683705329895
+      Distance: 1.2239880561828613
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 9.804440196603537e-06
-        Y: -0.00025453208945691586
-        Z: 0.0025670193135738373
+        X: 0.009343939833343029
+        Y: -0.012057671323418617
+        Z: 0.005252588074654341
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5602027773857117
+      Pitch: 0.5852029919624329
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 2.9073679447174072
+      Yaw: 2.732377767562866
     Saved: ~
 Window Geometry:
   Displays:

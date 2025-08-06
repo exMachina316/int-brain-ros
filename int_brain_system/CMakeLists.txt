@@ -10,11 +10,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-add_executable(imu_calibrate src/imu_calibrate.cpp)
-ament_target_dependencies(imu_calibrate rclcpp sensor_msgs)
+add_executable(imu_feedback_node src/imu_feedback.cpp)
+ament_target_dependencies(imu_feedback_node rclcpp sensor_msgs)
 
 install(TARGETS
-  imu_calibrate
+  imu_feedback_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

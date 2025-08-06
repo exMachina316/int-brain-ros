@@ -76,6 +76,10 @@ Visualization Manager:
           Value: true
         front_right_motor_shaft:
           Value: true
+        imu:
+          Value: true
+        pcb:
+          Value: true
         rear_left_coupler:
           Value: true
         rear_left_mecanum_wheel:
@@ -110,6 +114,9 @@ Visualization Manager:
                 front_right_coupler:
                   front_right_mecanum_wheel:
                     {}
+            pcb:
+              imu:
+                {}
             rear_left_motor_chassis:
               rear_left_motor_shaft:
                 rear_left_coupler:
@@ -185,6 +192,15 @@ Visualization Manager:
           Show Trail: false
           Value: true
         front_right_motor_shaft:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        pcb:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -283,25 +299,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.40106773376464844
+      Distance: 0.05969737470149994
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 9.804440196603537e-06
-        Y: -0.00025453208945691586
-        Z: 0.0025670193135738373
+        X: -0.002986667677760124
+        Y: -0.012479480355978012
+        Z: 0.1237708032131195
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.2502027750015259
+      Pitch: 0.7386583089828491
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 2.8923678398132324
+      Yaw: 3.4211885929107666
     Saved: ~
 Window Geometry:
   Displays:
