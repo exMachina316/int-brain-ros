@@ -7,7 +7,7 @@ class Imu
 {
 public:
     std::string name_;
-    double orientation_[4]; // Quaternion representation
+    double orientation_[4]; // Quaternion representation: w, x, y, z
     double angular_velocity_[3]; // rad/s
     double linear_acceleration_[3]; // m/s^2
 

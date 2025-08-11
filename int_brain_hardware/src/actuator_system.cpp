@@ -40,7 +40,6 @@ namespace int_brain_hardware
           joint.name.c_str(), command_interface.name.c_str());
 
       if (command_interface.name != hardware_interface::HW_IF_VELOCITY)
-      // {
       //   for (auto &motor : motors)
       //   {
       //     if (motor.name_ == joint.name)
@@ -56,7 +55,6 @@ namespace int_brain_hardware
       //     }
       //   }
       // }
-      // else
       {
         RCLCPP_FATAL(
             rclcpp::get_logger("IntBrainHardware"),
@@ -93,13 +91,13 @@ namespace int_brain_hardware
       if (sensor.name == "imu_sensor")
       {
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            sensor.name, "orientation.x", &imu_.orientation_[0]));
+            sensor.name, "orientation.w", &imu_.orientation_[0]));
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            sensor.name, "orientation.y", &imu_.orientation_[1]));
+            sensor.name, "orientation.x", &imu_.orientation_[1]));
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            sensor.name, "orientation.z", &imu_.orientation_[2]));
+            sensor.name, "orientation.y", &imu_.orientation_[2]));
         state_interfaces.emplace_back(hardware_interface::StateInterface(
-            sensor.name, "orientation.w", &imu_.orientation_[3]));
+            sensor.name, "orientation.z", &imu_.orientation_[3]));
 
         state_interfaces.emplace_back(hardware_interface::StateInterface(
             sensor.name, "angular_velocity.x", &imu_.angular_velocity_[0]));
