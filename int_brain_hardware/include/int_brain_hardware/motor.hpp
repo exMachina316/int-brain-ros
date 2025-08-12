@@ -8,7 +8,7 @@ class Motor
 {
 public:
     std::string name_;
-    int enc_;
+    int64_t enc_;
     double pos_;
     double vel_;
     double rpm_desired_;
@@ -27,9 +27,10 @@ public:
         name_ = name;
     }
 
-    double calc_enc_pos(double range = 0.025) const
+    void set_encoder(int64_t enc)
     {
-        return (range * enc_ / 4095) - range / 2;
+        enc_ = enc;
+        pos_ = 2 * M_PI * ((enc % 1320) / 1320.0);
     }
 
     void reset_state()

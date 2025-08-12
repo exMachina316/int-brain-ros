@@ -143,7 +143,14 @@ namespace int_brain_hardware
     {
       comms_.disconnect();
     }
-    comms_.connect(cfg_.device_addr, cfg_.baud_rate, cfg_.timeout_ms);
+    if (!comms_.connect(cfg_.device_addr, cfg_.timeout_ms)) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to connect to INT BRAIN at %s",
+          cfg_.device_addr.c_str());
+      return hardware_interface::CallbackReturn::ERROR;
+    };
+
     RCLCPP_INFO(rclcpp::get_logger("IntBrainHardware"), "Successfully configured!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
@@ -245,10 +252,11 @@ namespace int_brain_hardware
       }
       else
       {
-        motors[i].pos_ = encoder_positions[i];
+        motors[i].set_encoder(encoder_positions[i]);
       }
     }
 
+    
     // Read encoder velocities
     std::vector<float> encoder_velocities;
     if (comms_.req_data(REQUEST_ENCODER_VELOCITIES, encoder_velocities) != 0)

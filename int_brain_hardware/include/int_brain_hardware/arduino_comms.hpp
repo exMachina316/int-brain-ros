@@ -3,42 +3,10 @@
 
 #include <sstream>
 #include <libserial/SerialPort.h>
-#include <libserial/SerialStream.h>
 #include <iostream>
 #include <algorithm>
 #include "bot_speak.h"
 #include "int_brain_messages.h"
-
-LibSerial::BaudRate convert_baud_rate(int baud_rate)
-{
-  // Just handle some common baud rates
-  switch (baud_rate)
-  {
-  case 1200:
-    return LibSerial::BaudRate::BAUD_1200;
-  case 1800:
-    return LibSerial::BaudRate::BAUD_1800;
-  case 2400:
-    return LibSerial::BaudRate::BAUD_2400;
-  case 4800:
-    return LibSerial::BaudRate::BAUD_4800;
-  case 9600:
-    return LibSerial::BaudRate::BAUD_9600;
-  case 19200:
-    return LibSerial::BaudRate::BAUD_19200;
-  case 38400:
-    return LibSerial::BaudRate::BAUD_38400;
-  case 57600:
-    return LibSerial::BaudRate::BAUD_57600;
-  case 115200:
-    return LibSerial::BaudRate::BAUD_115200;
-  case 230400:
-    return LibSerial::BaudRate::BAUD_230400;
-  default:
-    std::cout << "Error! Baud rate " << baud_rate << " not supported! Default to 57600" << std::endl;
-    return LibSerial::BaudRate::BAUD_57600;
-  }
-}
 
 using LibSerial::DataBuffer;
 
@@ -48,7 +16,7 @@ class ArduinoComms
 public:
   ArduinoComms() = default;
 
-  void connect(const std::string &serial_device, int32_t baud_rate, int32_t timeout_ms)
+  bool connect(const std::string &serial_device, int32_t timeout_ms)
   {
     timeout_ms_ = timeout_ms;
     try
@@ -58,9 +26,10 @@ public:
     catch (const LibSerial::OpenFailed &e)
     {
       std::cerr << "Failed to open serial port: " << e.what() << std::endl;
-      return;
+      return false;
     }
-    serial_conn_.SetBaudRate(convert_baud_rate(baud_rate));
+
+    return true;
   }
 
   void disconnect()
