@@ -11,7 +11,7 @@ public:
     int64_t enc_;
     double pos_;
     double vel_;
-    double rpm_desired_;
+    double rpm_desired_;    // In rad/s
     double current_;
 
     Motor() = default;
