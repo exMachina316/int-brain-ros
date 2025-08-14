@@ -11,7 +11,7 @@ def generate_launch_description():
     # Get package's share directory path
     int_brain_system_pkg_share = FindPackageShare('int_brain_system')
 
-    teleop_joy_params = PathJoinSubstitution([int_brain_system_pkg_share, 'config', 'teleop_joy_params.yaml'])
+    teleop_params = PathJoinSubstitution([int_brain_system_pkg_share, 'config', 'teleop_params.yaml'])
     rviz_config_file = LaunchConfiguration("rviz_config_file", 
                             default=PathJoinSubstitution([
                                 int_brain_system_pkg_share, 'config', 'view.rviz'
@@ -30,7 +30,10 @@ def generate_launch_description():
         package='teleop_twist_joy',
         executable='teleop_node',
         name='teleop_twist_joy_node',
-        parameters=[teleop_joy_params],
+        parameters=[teleop_params],
+        remappings=[
+            ('/cmd_vel', '/cmd_vel_raw')
+        ]
     )
 
     game_controller_node = Node(
@@ -43,11 +46,35 @@ def generate_launch_description():
         package='int_brain_system',
         executable='imu_feedback_node',
         name='imu_feedback_node',
-        parameters=[teleop_joy_params],
+        parameters=[teleop_params],
+    )
+
+    lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager',
+        output='screen',
+        parameters=[{
+            'use_sim_time': False,
+            'autostart': True,
+            'node_names': ['velocity_smoother']
+        }]
+    )
+
+    velocity_smoother_node = Node(
+        package='nav2_velocity_smoother',
+        executable='velocity_smoother',
+        name='velocity_smoother',
+        output='screen',
+        parameters=[teleop_params],
+        remappings=[
+            ('/cmd_vel', '/cmd_vel_raw'),
+            ('/cmd_vel_smoothed', '/cmd_vel')
+        ]
     )
 
     nodes = [
-        teleop_node, game_controller_node, imu_feedback_node, rviz_node
+        teleop_node, game_controller_node, imu_feedback_node, rviz_node, velocity_smoother_node, lifecycle_manager
     ]
 
     return LaunchDescription(nodes)
