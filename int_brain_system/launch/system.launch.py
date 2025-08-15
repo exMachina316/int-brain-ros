@@ -148,7 +148,7 @@ def generate_launch_description():
         imu_broadcaster_spawner,
         mecanum_drive_controller_spawner,
         diff_drive_controller_spawner,
-        # robot_localization,
+        robot_localization,
         rviz_node
     ]
 

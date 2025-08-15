@@ -1,0 +1,9 @@
+<library path="custom_effort_controllers">
+  <class name="custom_effort_controllers/SystemIdentifier"
+         type="custom_effort_controllers::SystemIdentifier"
+         base_class_type="controller_interface::ControllerInterface">
+    <description>
+      A simple controller that controls a joint's position using effort commands via a PID loop.
+    </description>
+  </class>
+</library>
