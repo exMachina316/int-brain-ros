@@ -10,20 +10,6 @@
             <param name="is_feedforward">$(arg is_feedforward)</param>
         </hardware>
 
-        <joint name="front_left_shaft_joint">
-            <command_interface name="velocity" />
-
-            <state_interface name="position" />
-            <state_interface name="velocity" />
-        </joint>
-
-        <joint name="rear_left_shaft_joint">
-            <command_interface name="velocity" />
-
-            <state_interface name="position" />
-            <state_interface name="velocity" />
-        </joint>
-
         <joint name="front_right_shaft_joint">
             <command_interface name="velocity" />
 
@@ -32,6 +18,20 @@
         </joint>
 
         <joint name="rear_right_shaft_joint">
+            <command_interface name="velocity" />
+
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>
+
+        <joint name="front_left_shaft_joint">
+            <command_interface name="velocity" />
+
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>
+
+        <joint name="rear_left_shaft_joint">
             <command_interface name="velocity" />
 
             <state_interface name="position" />
