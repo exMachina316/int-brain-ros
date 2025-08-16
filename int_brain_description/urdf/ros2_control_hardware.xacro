@@ -4,10 +4,32 @@
     <ros2_control name="IntBrainSystem" type="system">
         <hardware>
             <plugin>int_brain_hardware/IntBrainHardware</plugin>
-            <param name="device_addr">/dev/int-brain-315936583034</param>
-            <param name="baud_rate">230400</param>
-            <param name="timeout_ms">1000</param>
+            <param name="device_addr">/dev/int-brain-316436653034</param>
+            <param name="timeout_ms">100</param>
             <param name="is_feedforward">$(arg is_feedforward)</param>
+
+            <!-- IMU settings -->
+            <param name="imu_usage">true</param>
+            <param name="imu_sensor_fusion">true</param>
+            <param name="imu_sensor_fusion_frequency">100</param>
+
+            <!-- Encoder settings -->
+            <param name="encoder_usage">true</param>
+            <param name="encoder_velocity_calculation">true</param>
+            <param name="encoder_velocity_calculation_frequency">100</param>
+            <param name="encoder_cpr">1320</param>
+
+            <!-- Motor current measurement settings -->
+            <param name="motor_current_meas_on_off">true</param>
+            <param name="motor_current_meas_frequency">100</param>
+
+            <!-- Battery voltage measurement settings -->
+            <param name="battery_voltage_meas_on_off">true</param>
+            <param name="battery_voltage_meas_rate">10</param>
+
+            <!-- Motor closed loop control settings -->
+            <param name="closed_loop_control">true</param>
+            <param name="closed_loop_frequency">200</param>
         </hardware>
 
         <joint name="front_right_shaft_joint">
@@ -15,6 +37,13 @@
 
             <state_interface name="position" />
             <state_interface name="velocity" />
+
+            <param name="kp">6.0</param>
+            <param name="ki">3.5</param>
+            <param name="kd">-0.005</param>
+            <param name="kd_filter_coeff">10.0</param>
+            <param name="ff0">1.004187035789131</param>
+            <param name="ff1">0.12866352232164302</param>
         </joint>
 
         <joint name="rear_right_shaft_joint">
@@ -22,6 +51,13 @@
 
             <state_interface name="position" />
             <state_interface name="velocity" />
+
+            <param name="kp">6.0</param>
+            <param name="ki">3.5</param>
+            <param name="kd">-0.005</param>
+            <param name="kd_filter_coeff">10.0</param>
+            <param name="ff0">0.966311070657699</param>
+            <param name="ff1">0.15775862872871882</param>
         </joint>
 
         <joint name="front_left_shaft_joint">
@@ -29,6 +65,13 @@
 
             <state_interface name="position" />
             <state_interface name="velocity" />
+
+            <param name="kp">6.0</param>
+            <param name="ki">3.5</param>
+            <param name="kd">-0.005</param>
+            <param name="kd_filter_coeff">10.0</param>
+            <param name="ff0">1.0200673342777509</param>
+            <param name="ff1">-0.3682036005229734</param>
         </joint>
 
         <joint name="rear_left_shaft_joint">
@@ -36,6 +79,13 @@
 
             <state_interface name="position" />
             <state_interface name="velocity" />
+
+            <param name="kp">5.0</param>
+            <param name="ki">3.5</param>
+            <param name="kd">-0.005</param>
+            <param name="kd_filter_coeff">10.0</param>
+            <param name="ff0">1.008908105064786</param>
+            <param name="ff1">-0.2470694664139883</param>
         </joint>
 
         <sensor name="imu_sensor">

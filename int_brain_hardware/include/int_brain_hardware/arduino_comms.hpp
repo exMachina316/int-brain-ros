@@ -187,6 +187,43 @@ public:
     return 0;
   }
 
+template <typename T>
+  int send_config(uint8_t command_id, const std::vector<T> &data)
+  {
+    serial_conn_.FlushIOBuffers(); // Just in case
+
+    T *trasmitBuffer = new T[data.size()];
+    std::copy(data.begin(), data.end(), trasmitBuffer);
+
+    uint8_t dataLength;
+    uint8_t frameLength;
+    uint8_t serializedDataBuffer[256];
+    uint8_t frameBuffer[256];
+
+    botSpeak_serialize(trasmitBuffer, data.size(), sizeof(T), serializedDataBuffer, &dataLength);
+
+    DataFrame_TypeDef frame = {
+        .frameID = command_id,
+        .timestamp = 0,
+        .dataLength = dataLength,
+        .data = serializedDataBuffer
+    };
+
+    if (botSpeak_packFrame(&frame, frameBuffer, &frameLength) != 0)
+    {
+      std::cerr << "Failed to pack frame" << std::endl;
+      return 1;
+    }
+
+    DataBuffer frameBufferVec(frameBuffer, frameBuffer + frameLength);
+    serial_conn_.Write(frameBufferVec);
+
+    // Add 10ms delay to ensure the command is processed
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    return 0;
+  }
+
 private:
   LibSerial::SerialPort serial_conn_;
   int timeout_ms_;

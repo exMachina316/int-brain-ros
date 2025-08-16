@@ -26,10 +26,34 @@ namespace int_brain_hardware
     info_ = info;
 
     cfg_.device_addr = info_.hardware_parameters["device_addr"];
-    cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
     cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
     cfg_.is_feedforward_ = info_.hardware_parameters["is_feedforward"] == "true" ? true : false;
 
+    // IMU settings
+    cfg_.imu_usage = info_.hardware_parameters["imu_usage"] == "true";
+    cfg_.imu_sensor_fusion = info_.hardware_parameters["imu_sensor_fusion"] == "true";
+    cfg_.imu_sensor_fusion_frequency = std::stoul(info_.hardware_parameters["imu_sensor_fusion_frequency"]);
+
+    // Encoder settings
+    cfg_.encoder_usage = info_.hardware_parameters["encoder_usage"] == "true";
+    cfg_.encoder_velocity_calculation = info_.hardware_parameters["encoder_velocity_calculation"] == "true";
+    cfg_.encoder_velocity_calculation_frequency = std::stoul(info_.hardware_parameters["encoder_velocity_calculation_frequency"]);
+    cfg_.encoder_cpr = std::stoul(info_.hardware_parameters["encoder_cpr"]);
+
+    // Motor current measurement settings
+    cfg_.motor_current_meas_on_off = info_.hardware_parameters["motor_current_meas_on_off"] == "true";
+    cfg_.motor_current_meas_frequency = std::stoul(info_.hardware_parameters["motor_current_meas_frequency"]);
+
+    // Battery voltage measurement settings
+    cfg_.battery_voltage_meas_on_off = info_.hardware_parameters["battery_voltage_meas_on_off"] == "true";
+    cfg_.battery_voltage_meas_rate = std::stoul(info_.hardware_parameters["battery_voltage_meas_rate"]);
+
+    // Motor closed loop control settings
+    cfg_.closed_loop_control = info_.hardware_parameters["closed_loop_control"] == "true";
+    cfg_.closed_loop_frequency = std::stoul(info_.hardware_parameters["closed_loop_frequency"]);
+
+    // Initialize motors
+    int index=0;
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
       const auto command_interface = joint.command_interfaces[0];
@@ -40,21 +64,6 @@ namespace int_brain_hardware
           joint.name.c_str(), command_interface.name.c_str());
 
       if (command_interface.name != hardware_interface::HW_IF_VELOCITY)
-      //   for (auto &motor : motors)
-      //   {
-      //     if (motor.name_ == joint.name)
-      //     {
-      //       double min_effort = std::stod(command_interface.parameters.at("min"));
-      //       double max_effort = std::stod(command_interface.parameters.at("max"));
-      //       motor.setup(joint.name, min_effort, max_effort);
-
-      //       RCLCPP_INFO(
-      //           rclcpp::get_logger("IntBrainHardware"),
-      //           "Joint '%s' effort interface has min: %f and max: %f",
-      //           joint.name.c_str(), min_effort, max_effort);
-      //     }
-      //   }
-      // }
       {
         RCLCPP_FATAL(
             rclcpp::get_logger("IntBrainHardware"),
@@ -63,6 +72,18 @@ namespace int_brain_hardware
 
         return hardware_interface::CallbackReturn::ERROR;
       }
+
+      float kp = std::stof(joint.parameters.at("kp"));
+      float ki = std::stof(joint.parameters.at("ki"));
+      float kd = std::stof(joint.parameters.at("kd"));
+      float kd_filter_coeff = std::stof(joint.parameters.at("kd_filter_coeff"));
+      float ff0 = std::stof(joint.parameters.at("ff0"));
+      float ff1 = std::stof(joint.parameters.at("ff1"));
+      motors[index++].setup(joint.name, kp, ki, kd, kd_filter_coeff, ff0, ff1);
+      RCLCPP_INFO(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Motor '%s' initialized with kp: %f, ki: %f, kd: %f, ff0: %f, ff1: %f",
+          joint.name.c_str(), kp, ki, kd, ff0, ff1);
     }
 
     return hardware_interface::CallbackReturn::SUCCESS;
@@ -150,6 +171,172 @@ namespace int_brain_hardware
           cfg_.device_addr.c_str());
       return hardware_interface::CallbackReturn::ERROR;
     };
+
+    // -------------------  Send Configurations --------------------
+
+    // IMU settings
+    std::vector<bool> imu_usage = {cfg_.imu_usage};
+    if (comms_.send_config(IMU_USAGE, imu_usage) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set closed loop control on/off");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    std::vector<bool> imu_sensor_fusion = {cfg_.imu_sensor_fusion};
+    if (comms_.send_config(IMU_SENSOR_FUSION, imu_sensor_fusion) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set IMU sensor fusion");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    std::vector<uint32_t> imu_sensor_fusion_frequency = {cfg_.imu_sensor_fusion_frequency};
+    if (comms_.send_config(IMU_SENSOR_FUSION_FREQUENCY, imu_sensor_fusion_frequency) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set IMU sensor fusion frequency");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    // Encoder settings
+    std::vector<bool> encoder_usage = {cfg_.encoder_usage};
+    if (comms_.send_config(ENCODER_USAGE, encoder_usage) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set encoder usage");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    std::vector<bool> encoder_velocity_calculation = {cfg_.encoder_velocity_calculation};
+    if (comms_.send_config(ENCODER_VELOCITY_CALCULATION, encoder_velocity_calculation) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set encoder velocity calculation");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    std::vector<uint32_t> encoder_velocity_calculation_frequency = {cfg_.encoder_velocity_calculation_frequency};
+    if (comms_.send_config(ENCODER_VELOCITY_CALCULATION_FREQUENCY, encoder_velocity_calculation_frequency) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set encoder velocity calculation frequency");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    std::vector<uint32_t> encoder_cpr = {cfg_.encoder_cpr};
+    if (comms_.send_config(ENCODER_CPR, encoder_cpr) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set encoder CPR");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    // Motor current measurement settings
+    std::vector<bool> motor_current_meas_on_off = {cfg_.motor_current_meas_on_off};
+    if (comms_.send_config(MOTOR_CURRENT_MEAS_ON_OFF, motor_current_meas_on_off) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set motor current measurement on/off");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    std::vector<uint32_t> motor_current_meas_frequency = {cfg_.motor_current_meas_frequency};
+    if (comms_.send_config(MOTOR_CURRENT_MEAS_FREQUENCY, motor_current_meas_frequency) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set motor current measurement frequency");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    // Battery voltage measurement settings
+    // // TODO (eccentricOrange): Battery config parsing is not implemented in the STM32 firmware yet
+    // 
+    // std::vector<bool> battery_voltage_meas_on_off = {false};
+    // if (comms_.send_config(BATTERY_VOLTAGE_MEAS_ON_OFF, battery_voltage_meas_on_off) != 0) {
+    //   RCLCPP_ERROR(
+    //       rclcpp::get_logger("IntBrainHardware"),
+    //       "Failed to set battery voltage measurement on/off");
+    //   return hardware_interface::CallbackReturn::ERROR;
+    // }
+
+    // std::vector<uint32_t> battery_voltage_meas_rate = {200};
+    // if (comms_.send_config(BATTERY_VOLTAGE_MEAS_RATE, battery_voltage_meas_rate) != 0) {
+    //   RCLCPP_ERROR(
+    //       rclcpp::get_logger("IntBrainHardware"),
+    //       "Failed to set battery voltage measurement rate");
+    //   return hardware_interface::CallbackReturn::ERROR;
+    // }
+
+    // Motor closed loop control settings
+    std::vector<bool> closed_loop_control = {cfg_.closed_loop_control};
+    if (comms_.send_config(MOTOR_CLOSED_LOOP_ON_OFF, closed_loop_control) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set closed loop control on/off");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    std::vector<uint32_t> closed_loop_frequency = {cfg_.closed_loop_frequency};
+    if (comms_.send_config(MOTOR_CLOSED_LOOP_FREQUENCY, closed_loop_frequency) != 0) {
+      RCLCPP_ERROR(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set closed loop control frequency");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    // Set motor-wise closed loop control parameters
+    int index = 0;
+    for (auto &motor : motors) {
+      std::vector<float> kp_param;
+      kp_param.push_back((float)index);
+      kp_param.push_back(motor.kp_);
+      if (comms_.send_config(MOTOR_CLOSED_LOOP_KP, kp_param) != 0) {
+        RCLCPP_INFO(
+            rclcpp::get_logger("IntBrainHardware"),
+            "Failed to set Kp for Motor%d: %f", (int)kp_param[0], kp_param[1]);
+      }
+
+      std::vector<float> ki_param;
+      ki_param.push_back((float)index);
+      ki_param.push_back(motor.ki_);
+      if (comms_.send_config(MOTOR_CLOSED_LOOP_KI, ki_param) != 0) {
+        RCLCPP_INFO(
+            rclcpp::get_logger("IntBrainHardware"),
+            "Failed to set Ki for Motor%d: %f", (int)ki_param[0], ki_param[1]);
+      }
+
+      std::vector<float> kd_param;
+      kd_param.push_back((float)index);
+      kd_param.push_back(motor.kd_);
+      if (comms_.send_config(MOTOR_CLOSED_LOOP_KD, kd_param) != 0) {
+        RCLCPP_INFO(
+            rclcpp::get_logger("IntBrainHardware"),
+            "Failed to set Kd for Motor%d: %f", (int)kd_param[0], kd_param[1]);
+      }
+
+      std::vector<float> kd_filter_coeff_param;
+      kd_filter_coeff_param.push_back((float)index);
+      kd_filter_coeff_param.push_back(motor.kd_filter_coeff_);
+      if (comms_.send_config(MOTOR_CLOSED_LOOP_FILTER_COEFF, kd_filter_coeff_param) != 0) {
+        RCLCPP_INFO(
+            rclcpp::get_logger("IntBrainHardware"),
+            "Failed to set Kd filter coeff for Motor%d: %f", (int)kd_filter_coeff_param[0], kd_filter_coeff_param[1]);
+      }
+
+      std::vector<float> ff_param;
+      ff_param.push_back((float)index);
+      ff_param.push_back(motor.ff_param_[0]);
+      ff_param.push_back(motor.ff_param_[1]);
+      if (comms_.send_config(MOTOR_FEEDFORWARD_PARAM, ff_param) != 0) {
+        RCLCPP_INFO(
+            rclcpp::get_logger("IntBrainHardware"),
+            "Failed to set FF Params for Motor%d: %f, %f", (int)ff_param[0], ff_param[1], ff_param[2]);
+      }
+
+      index++;
+    }
+
 
     RCLCPP_INFO(rclcpp::get_logger("IntBrainHardware"), "Successfully configured!");
 
@@ -256,7 +443,7 @@ namespace int_brain_hardware
       }
     }
 
-    
+
     // Read encoder velocities
     std::vector<float> encoder_velocities;
     if (comms_.req_data(REQUEST_ENCODER_VELOCITIES, encoder_velocities) != 0)

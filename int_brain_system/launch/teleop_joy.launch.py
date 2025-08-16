@@ -74,7 +74,9 @@ def generate_launch_description():
     )
 
     nodes = [
-        teleop_node, game_controller_node, imu_feedback_node, rviz_node, velocity_smoother_node, lifecycle_manager
+        teleop_node, game_controller_node,
+        imu_feedback_node, rviz_node,
+        velocity_smoother_node, lifecycle_manager
     ]
 
     return LaunchDescription(nodes)
