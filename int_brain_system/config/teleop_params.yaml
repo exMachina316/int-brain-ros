@@ -37,3 +37,12 @@ velocity_smoother:
     max_accel: [2.5, 2.5, 13.0]
     max_decel: [-2.5, -2.5, -13.0]
     enable_stamped_cmd_vel: true
+
+hand_teleop_node:
+  ros__parameters:
+    frame_id: "base_footprint"
+    websocket_ip: "192.168.7.59"
+    websocket_port: 81
+    # pitch_to_linear_x_scale: 0.5
+    # roll_to_linear_y_scale: 4.5
+    # yaw_to_angular_z_scale: 9.0

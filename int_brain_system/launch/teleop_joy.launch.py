@@ -3,13 +3,17 @@
 from launch import LaunchDescription
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
+from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-
+from launch.conditions import IfCondition
 
 def generate_launch_description():
     # Get package's share directory path
     int_brain_system_pkg_share = FindPackageShare('int_brain_system')
+
+    rviz_arg = DeclareLaunchArgument("rviz", default_value="true", 
+                                     description="Launch RViz2 with the robot model and controllers")
 
     teleop_params = PathJoinSubstitution([int_brain_system_pkg_share, 'config', 'teleop_params.yaml'])
     rviz_config_file = LaunchConfiguration("rviz_config_file", 
@@ -18,12 +22,15 @@ def generate_launch_description():
                             ])
                         )
 
+    rviz = LaunchConfiguration("rviz", default="true")
+
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="screen",
         arguments=["-d", rviz_config_file],
+        condition=IfCondition(rviz),
     )
 
     teleop_node = Node(
@@ -73,10 +80,23 @@ def generate_launch_description():
         ]
     )
 
+    hand_teleop = Node(
+        package='motor_modelling',
+        executable='hand_teleop',
+        name='hand_teleop_node',
+        output='screen',
+        parameters=[teleop_params],
+    )
+
     nodes = [
-        teleop_node, game_controller_node,
+        # teleop_node, game_controller_node,
         imu_feedback_node, rviz_node,
+        hand_teleop,
         velocity_smoother_node, lifecycle_manager
     ]
 
-    return LaunchDescription(nodes)
+    arguments = [
+        rviz_arg
+    ]
+
+    return LaunchDescription(nodes+arguments)

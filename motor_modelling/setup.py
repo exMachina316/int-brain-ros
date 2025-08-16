@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'system_id_node = motor_modelling.system_id_node:main'
+            'system_id_node = motor_modelling.system_id_node:main',
+            'hand_teleop = motor_modelling.hand_teleop:main',
         ],
     },
 )
