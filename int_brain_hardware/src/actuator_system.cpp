@@ -180,7 +180,7 @@ namespace int_brain_hardware
     {
       comms_.disconnect();
     }
-    if (comms_.connect(cfg_.device_addr, cfg_.timeout_ms)) {
+    if (!comms_.connect(cfg_.device_addr, cfg_.timeout_ms)) {
       RCLCPP_ERROR(
           rclcpp::get_logger("IntBrainHardware"),
           "Failed to connect to INT BRAIN at %s",
