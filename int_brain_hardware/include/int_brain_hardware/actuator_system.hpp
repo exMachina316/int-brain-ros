@@ -21,6 +21,8 @@
 #include "int_brain_hardware/battery.hpp"
 #include "int_brain_hardware/imu.hpp"
 
+#include "int_brain_messages.h"
+
 namespace int_brain_hardware
 {
   class IntBrainHardware : public hardware_interface::SystemInterface
@@ -52,8 +54,8 @@ namespace int_brain_hardware
       uint32_t battery_voltage_meas_rate = 0;
 
       // Motor closed loop control settings
-      bool closed_loop_control = false;
-      uint32_t closed_loop_frequency = 0;
+      MotorControllerMode_TypeDef motor_control_mode = PID_FEED_FORWARD;
+      uint32_t motor_controller_frequency = 0;
     };
 
   public:

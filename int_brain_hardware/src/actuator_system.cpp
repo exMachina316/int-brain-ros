@@ -49,8 +49,24 @@ namespace int_brain_hardware
     cfg_.battery_voltage_meas_rate = std::stoul(info_.hardware_parameters["battery_voltage_meas_rate"]);
 
     // Motor closed loop control settings
-    cfg_.closed_loop_control = info_.hardware_parameters["closed_loop_control"] == "true";
-    cfg_.closed_loop_frequency = std::stoul(info_.hardware_parameters["closed_loop_frequency"]);
+    auto motor_control_mode = info_.hardware_parameters["motor_control_mode"];
+    if (motor_control_mode == "effort") {
+
+    } else if (motor_control_mode == "feed_forward") {
+      cfg_.motor_control_mode = EFFORT;
+    } else if (motor_control_mode == "pid_feed_forward") {
+      cfg_.motor_control_mode = PID_FEED_FORWARD;
+    } else if (motor_control_mode == "simple_pid") {
+      cfg_.motor_control_mode = SIMPLE_PID;
+    } else {
+      RCLCPP_FATAL(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Invalid motor control mode: %s. Supported modes are: effort, feed_forward, pid_feed_forward, simple_pid",
+          motor_control_mode.c_str());
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    cfg_.motor_controller_frequency = std::stoul(info_.hardware_parameters["motor_controller_frequency"]);
 
     // Initialize motors
     int index=0;
@@ -269,74 +285,84 @@ namespace int_brain_hardware
     // }
 
     // Motor closed loop control settings
-    std::vector<bool> closed_loop_control = {cfg_.closed_loop_control};
-    if (comms_.send_config(MOTOR_CLOSED_LOOP_ON_OFF, closed_loop_control) != 0) {
+    std::vector<MotorControllerMode_TypeDef> motor_control_mode = {cfg_.motor_control_mode};
+    if (comms_.send_config(MOTOR_CONTROLLER_MODE, motor_control_mode) != 0) {
       RCLCPP_ERROR(
           rclcpp::get_logger("IntBrainHardware"),
           "Failed to set closed loop control on/off");
       return hardware_interface::CallbackReturn::ERROR;
     }
 
-    std::vector<uint32_t> closed_loop_frequency = {cfg_.closed_loop_frequency};
-    if (comms_.send_config(MOTOR_CLOSED_LOOP_FREQUENCY, closed_loop_frequency) != 0) {
+    std::vector<uint32_t> motor_controller_frequency = {cfg_.motor_controller_frequency};
+    if (comms_.send_config(MOTOR_CONTROLLER_FREQUENCY, motor_controller_frequency) != 0) {
       RCLCPP_ERROR(
           rclcpp::get_logger("IntBrainHardware"),
           "Failed to set closed loop control frequency");
       return hardware_interface::CallbackReturn::ERROR;
     }
 
-    // Set motor-wise closed loop control parameters
-    int index = 0;
+    // Get PID configs
+    std::vector<float> kp_param;
+    std::vector<float> ki_param;
+    std::vector<float> kd_param;
+    std::vector<float> kd_filter_coeff_param;
+    std::vector<float> ff_param;
+    
     for (auto &motor : motors) {
-      std::vector<float> kp_param;
-      kp_param.push_back((float)index);
       kp_param.push_back(motor.kp_);
-      if (comms_.send_config(MOTOR_CLOSED_LOOP_KP, kp_param) != 0) {
-        RCLCPP_INFO(
-            rclcpp::get_logger("IntBrainHardware"),
-            "Failed to set Kp for Motor%d: %f", (int)kp_param[0], kp_param[1]);
-      }
-
-      std::vector<float> ki_param;
-      ki_param.push_back((float)index);
       ki_param.push_back(motor.ki_);
-      if (comms_.send_config(MOTOR_CLOSED_LOOP_KI, ki_param) != 0) {
-        RCLCPP_INFO(
-            rclcpp::get_logger("IntBrainHardware"),
-            "Failed to set Ki for Motor%d: %f", (int)ki_param[0], ki_param[1]);
-      }
-
-      std::vector<float> kd_param;
-      kd_param.push_back((float)index);
       kd_param.push_back(motor.kd_);
-      if (comms_.send_config(MOTOR_CLOSED_LOOP_KD, kd_param) != 0) {
-        RCLCPP_INFO(
-            rclcpp::get_logger("IntBrainHardware"),
-            "Failed to set Kd for Motor%d: %f", (int)kd_param[0], kd_param[1]);
-      }
-
-      std::vector<float> kd_filter_coeff_param;
-      kd_filter_coeff_param.push_back((float)index);
       kd_filter_coeff_param.push_back(motor.kd_filter_coeff_);
-      if (comms_.send_config(MOTOR_CLOSED_LOOP_FILTER_COEFF, kd_filter_coeff_param) != 0) {
-        RCLCPP_INFO(
-            rclcpp::get_logger("IntBrainHardware"),
-            "Failed to set Kd filter coeff for Motor%d: %f", (int)kd_filter_coeff_param[0], kd_filter_coeff_param[1]);
-      }
-
-      std::vector<float> ff_param;
-      ff_param.push_back((float)index);
       ff_param.push_back(motor.ff_param_[0]);
       ff_param.push_back(motor.ff_param_[1]);
-      if (comms_.send_config(MOTOR_FEEDFORWARD_PARAM, ff_param) != 0) {
-        RCLCPP_INFO(
-            rclcpp::get_logger("IntBrainHardware"),
-            "Failed to set FF Params for Motor%d: %f, %f", (int)ff_param[0], ff_param[1], ff_param[2]);
-      }
-
-      index++;
     }
 
+    // Set PID Configs
+    if (comms_.send_config(MOTOR_PID_KPS, kp_param) != 0) {
+      RCLCPP_WARN(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set Kp: %f, %f, %f, %f",
+          kp_param[0], kp_param[1],
+          kp_param[2], kp_param[3]
+        );
+    }
+
+    if (comms_.send_config(MOTOR_PID_KIS, ki_param) != 0) {
+      RCLCPP_WARN(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set Ki: %f, %f, %f, %f",
+          ki_param[0], ki_param[1],
+          ki_param[2], ki_param[3]
+        );
+    }
+
+    if (comms_.send_config(MOTOR_PID_KDS, kd_param) != 0) {
+      RCLCPP_WARN(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set Kd: %f, %f, %f, %f",
+          kd_param[0], kd_param[1],
+          kd_param[2], kd_param[3]
+        );
+    }
+
+    if (comms_.send_config(MOTOR_PID_FILTER_COEFFS, kd_filter_coeff_param) != 0) {
+      RCLCPP_WARN(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set Kd filter coeff: %f, %f, %f, %f", 
+          kd_filter_coeff_param[0], kd_filter_coeff_param[1],
+          kd_filter_coeff_param[2], kd_filter_coeff_param[3]
+        );
+    }
+
+    if (comms_.send_config(MOTOR_FEEDFORWARD_PARAMS, ff_param) != 0) {
+      RCLCPP_WARN(
+          rclcpp::get_logger("IntBrainHardware"),
+          "Failed to set FF Params: %f, %f, %f, %f, %f, %f, %f, %f: ",
+          ff_param[0], ff_param[1], ff_param[2], ff_param[3],
+          ff_param[4], ff_param[5], ff_param[6], ff_param[7]
+        );
+    }
+    
 
     RCLCPP_INFO(rclcpp::get_logger("IntBrainHardware"), "Successfully configured!");
 

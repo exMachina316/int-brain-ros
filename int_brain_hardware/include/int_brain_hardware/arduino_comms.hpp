@@ -74,32 +74,32 @@ public:
     switch (request_id)
     {
     case REQUEST_IMU_RAW:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + IMU_RAW_BYTES;
-      numberElements = 6;
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_IMU_RAW_BYTES;
+      numberElements = UNSERIALIZED_IMU_RAW_SIZE;
       break;
     case REQUEST_IMU_PROCESSED:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + IMU_PROCESSED_BYTES;
-      numberElements = 4;
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_IMU_PROCESSED_BYTES;
+      numberElements = UNSERIALIZED_IMU_PROCESSED_SIZE;
       break;
     case REQUEST_ENCODER_POSITIONS:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + ENCODER_POSITIONS_BYTES;
-      numberElements = 4;
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_ENCODER_POSITIONS_BYTES;
+      numberElements = UNSERIALIZED_ENCODER_POSITIONS_SIZE;
       break;
     case REQUEST_ENCODER_VELOCITIES:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + ENCODER_VELOCITIES_BYTES;
-      numberElements = 2;
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_ENCODER_VELOCITIES_BYTES;
+      numberElements = UNSERIALIZED_ENCODER_VELOCITIES_SIZE;
       break;
     case REQUEST_MOTOR_CURRENT:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + MOTOR_CURRENT_BYTES;
-      numberElements = 2;
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_MOTOR_CURRENT_BYTES;
+      numberElements = UNSERIALIZED_MOTOR_CURRENT_SIZE;
       break;
     case REQUEST_BATTERY_VOLTAGE:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + BATTERY_VOLTAGE_BYTES;
-      numberElements = 1;
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_BATTERY_VOLTAGE_BYTES;
+      numberElements = UNSERIALIZED_BATTERY_VOLTAGE_SIZE;
       break;
     case REQUEST_USER_DEFINED_BUTTON:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + USER_DEFINED_BUTTON_BYTES;
-      numberElements = 1;
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_USER_DEFINED_BUTTON_BYTES;
+      numberElements = UNSERIALIZED_USER_DEFINED_BUTTON_SIZE;
       break;
     default:
       std::cerr << "Unknown request ID: " << request_id << std::endl;
