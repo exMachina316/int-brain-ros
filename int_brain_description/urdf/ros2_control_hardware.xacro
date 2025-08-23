@@ -28,8 +28,8 @@
             <param name="battery_voltage_meas_rate">10</param>
 
             <!-- Motor closed loop control settings -->
-            <param name="closed_loop_control">true</param>
-            <param name="closed_loop_frequency">200</param>
+            <param name="motor_control_mode">PID_FEED_FORWARD</param>
+            <param name="motor_controller_frequency">200</param>
         </hardware>
 
         <joint name="front_right_shaft_joint">
