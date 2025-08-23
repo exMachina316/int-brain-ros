@@ -51,9 +51,9 @@ namespace int_brain_hardware
     // Motor closed loop control settings
     auto motor_control_mode = info_.hardware_parameters["motor_control_mode"];
     if (motor_control_mode == "effort") {
-
-    } else if (motor_control_mode == "feed_forward") {
       cfg_.motor_control_mode = EFFORT;
+    } else if (motor_control_mode == "feed_forward") {
+      cfg_.motor_control_mode = FEED_FORWARD;
     } else if (motor_control_mode == "pid_feed_forward") {
       cfg_.motor_control_mode = PID_FEED_FORWARD;
     } else if (motor_control_mode == "simple_pid") {
@@ -180,7 +180,7 @@ namespace int_brain_hardware
     {
       comms_.disconnect();
     }
-    if (!comms_.connect(cfg_.device_addr, cfg_.timeout_ms)) {
+    if (comms_.connect(cfg_.device_addr, cfg_.timeout_ms)) {
       RCLCPP_ERROR(
           rclcpp::get_logger("IntBrainHardware"),
           "Failed to connect to INT BRAIN at %s",
