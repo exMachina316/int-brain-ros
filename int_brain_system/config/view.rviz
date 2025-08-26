@@ -5,9 +5,8 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Status1
         - /TF1/Frames1
-        - /Odometry1/Shape1
+        - /Imu1/Axes properties1
       Splitter Ratio: 0.5
     Tree Height: 627
   - Class: rviz_common/Selection
@@ -274,7 +273,7 @@ Visualization Manager:
           Value: true
         Value: true
       Enabled: true
-      Keep: 100
+      Keep: 1000
       Name: Odometry
       Position Tolerance: 0.10000000149011612
       Shape:
@@ -293,8 +292,55 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /int_brain/odom
+        Value: /odometry/filtered
       Value: true
+    - Alpha: 1
+      Angular Arrow Scale: 2
+      Angular Color: 204; 204; 51
+      Arrow Width: 0.5
+      Class: rviz_default_plugins/TwistStamped
+      Enabled: true
+      Hide Small Values: true
+      History Length: 1
+      Linear Arrow Scale: 2
+      Linear Color: 204; 51; 51
+      Name: TwistStamped
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /cmd_vel_raw
+      Value: true
+    - Acceleration properties:
+        Acc. vector alpha: 1
+        Acc. vector color: 255; 0; 0
+        Acc. vector scale: 1
+        Derotate acceleration: true
+        Enable acceleration: false
+      Axes properties:
+        Axes scale: 0.20000000298023224
+        Enable axes: true
+      Box properties:
+        Box alpha: 1
+        Box color: 255; 0; 0
+        Enable box: false
+        x_scale: 1
+        y_scale: 1
+        z_scale: 1
+      Class: rviz_imu_plugin/Imu
+      Enabled: true
+      Name: Imu
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /imu_sensor_broadcaster/imu
+      Value: true
+      fixed_frame_orientation: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -341,25 +387,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.2239880561828613
+      Distance: 1.6455135345458984
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.009343939833343029
-        Y: -0.012057671323418617
-        Z: 0.005252588074654341
-      Focal Shape Fixed Size: true
+        X: -0.005404781550168991
+        Y: 0.005504034459590912
+        Z: 0.016201119869947433
+      Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5852029919624329
-      Target Frame: <Fixed Frame>
+      Pitch: 0.8453978300094604
+      Target Frame: base_link
       Value: Orbit (rviz_default_plugins)
-      Yaw: 2.732377767562866
+      Yaw: 3.1703999042510986
     Saved: ~
 Window Geometry:
   Displays:

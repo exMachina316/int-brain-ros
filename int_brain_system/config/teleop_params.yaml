@@ -1,5 +1,8 @@
 teleop_twist_joy_node:
   ros__parameters:
+    frame: "base_link"
+    publish_stamped_twist: true
+
     require_enable_button: false
     enable_turbo_button: 0
     axis_linear:
@@ -21,7 +24,6 @@ teleop_twist_joy_node:
       yaw: 9.0
 
     inverted_reverse: true
-    publish_stamped_twist: true
 
 imu_feedback_node:
   ros__parameters:
