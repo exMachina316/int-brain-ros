@@ -35,7 +35,7 @@ private:
         // http://www.ros.org/reps/rep-0103.html#axis-orientation
         // The gravity vector in the world frame is (0, 0, -g)
         // We rotate it to the sensor frame using the orientation quaternion
-        double g = 9.81;
+        double g = -9.81;
         double gravity_x = 2 * (qx * qz - qw * qy) * g;
         double gravity_y = 2 * (qy * qz + qw * qx) * g;
 
