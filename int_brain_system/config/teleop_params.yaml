@@ -25,6 +25,11 @@ teleop_twist_joy_node:
 
     inverted_reverse: true
 
+teleop_twist_keyboard_node:
+  ros__parameters:
+    frame_id: "base_link"
+    stamped: true
+
 imu_feedback_node:
   ros__parameters:
     alpha: 1.0
