@@ -3,6 +3,7 @@
 CONTAINER_WORKSPACE=/home/ubuntu/int_brain_ws
 CONTAINER_NAME="int_brain_container"
 TARGET=$1
+IMAGE_TAG="dev0.8"
 
 if [ -z "$TARGET" ]; then
     echo "Usage: $0 <target>"
@@ -27,7 +28,7 @@ if [ "$TARGET" == "host" ]; then
     --env="QT_X11_NO_MITSHM=1"  \
     --env "TERM=xterm-256color" \
     --user $(id -u):$(id -g) \
-    ghcr.io/eccentricorange/int_brain_host:amd64-dev0.5
+    ghcr.io/eccentricorange/int_brain_host:amd64-$IMAGE_TAG
 
 elif [ "$TARGET" == "sbc" ]; then
 
@@ -39,7 +40,7 @@ elif [ "$TARGET" == "sbc" ]; then
     --volume /dev:/dev \
     --env "TERM=xterm-256color" \
     --user ubuntu \
-    ghcr.io/eccentricorange/int_brain_sbc:aarch64-dev0.5
+    ghcr.io/eccentricorange/int_brain_sbc:aarch64-$IMAGE_TAG
 
 else
     echo "Invalid target: $TARGET"  
