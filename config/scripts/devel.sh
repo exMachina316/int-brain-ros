@@ -27,7 +27,7 @@ if [ "$TARGET" == "host" ]; then
     --env="DISPLAY"  \
     --env="QT_X11_NO_MITSHM=1"  \
     --env "TERM=xterm-256color" \
-    --user $(id -u):$(id -g) \
+    --user ubuntu \
     ghcr.io/eccentricorange/int_brain_host:amd64-$IMAGE_TAG
 
 elif [ "$TARGET" == "sbc" ]; then
