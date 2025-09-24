@@ -73,9 +73,13 @@ public:
 
     switch (request_id)
     {
-    case REQUEST_IMU_RAW:
-      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_IMU_RAW_BYTES;
-      numberElements = UNSERIALIZED_IMU_RAW_SIZE;
+    case REQUEST_IMU_ACCEL_RAW:
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_IMU_ACCEL_RAW_BYTES;
+      numberElements = UNSERIALIZED_IMU_ACCEL_RAW_SIZE;
+      break;
+    case REQUEST_IMU_GYRO_RAW:
+      bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_IMU_GYRO_RAW_BYTES;
+      numberElements = UNSERIALIZED_IMU_GYRO_RAW_SIZE;
       break;
     case REQUEST_IMU_PROCESSED:
       bytesToRead = BOT_SPEAK_MIN_PACKET_SIZE + SERIALIZED_IMU_PROCESSED_BYTES;
