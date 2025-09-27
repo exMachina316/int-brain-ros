@@ -496,26 +496,26 @@ namespace int_brain_hardware
       }
     }
 
-    // // Read motor currents
-    // std::vector<float> motor_currents;
-    // if (comms_.send_msg(REQUEST_MOTOR_CURRENT, motor_currents) != 0)
-    // {
-    //     RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read motor currents");
-    //     return hardware_interface::return_type::ERROR;
-    // }
-    // for (size_t i = 0; i < info_.joints.size(); ++i)
-    // {
-    //     motors[i].current_ = motor_currents[i];
-    // }
+    // Read motor currents
+    std::vector<float> motor_currents;
+    if (comms_.req_data(REQUEST_MOTOR_CURRENT, motor_currents) != 0)
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read motor currents");
+        return hardware_interface::return_type::ERROR;
+    }
+    for (size_t i = 0; i < info_.joints.size(); ++i)
+    {
+        motors[i].current_ = motor_currents[i];
+    }
 
-    // // Read battery voltage
-    // std::vector<float> battery_voltage;
-    // if (comms_.send_msg(REQUEST_BATTERY_VOLTAGE, battery_voltage) != 0)
-    // {
-    //     RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read battery voltage");
-    //     return hardware_interface::return_type::ERROR;
-    // }
-    // battery_.voltage_ = battery_voltage[0];
+    // Read battery voltage
+    std::vector<float> battery_voltage;
+    if (comms_.req_data(REQUEST_BATTERY_VOLTAGE, battery_voltage) != 0)
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read battery voltage");
+        return hardware_interface::return_type::ERROR;
+    }
+    battery_.voltage_ = battery_voltage[0];
 
     return hardware_interface::return_type::OK;
   }
