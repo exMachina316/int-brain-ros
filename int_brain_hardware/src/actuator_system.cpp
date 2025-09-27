@@ -442,9 +442,9 @@ namespace int_brain_hardware
       RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"), "Failed to read IMU data");
       return hardware_interface::return_type::ERROR;
     }
-    imu_.orientation_[0] = imu_data[0];
-    imu_.orientation_[1] = imu_data[1];
-    imu_.orientation_[2] = imu_data[2];
+    imu_.angular_velocity_[0] = imu_data[0];
+    imu_.angular_velocity_[1] = imu_data[1];
+    imu_.angular_velocity_[2] = imu_data[2];
 
     imu_data.clear();
     if (comms_.req_data(REQUEST_IMU_PROCESSED, imu_data) != 0)
