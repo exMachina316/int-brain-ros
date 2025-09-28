@@ -4,9 +4,14 @@
   <xacro:arg name="controllers_yaml" default="" />
   <xacro:arg name="sim" default="true" />
   <xacro:arg name="is_feedforward" default="false" />
+  <xacro:arg name="lidar" default="true" />
 
   <xacro:include filename="$(find int_brain_description)/urdf/macros.xacro" />
   <xacro:include filename="$(find int_brain_description)/urdf/materials.xacro" />
+
+  <xacro:if value="$(arg lidar)">
+    <xacro:include filename="$(find int_brain_description)/urdf/lidar.xacro" />
+  </xacro:if>
 
   <xacro:if value="$(arg sim)">
     <xacro:include filename="$(find int_brain_description)/urdf/gz.xacro" />

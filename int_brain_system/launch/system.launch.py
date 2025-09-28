@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler, DeclareLaunchArgument
+from launch.actions import RegisterEventHandler, DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, PythonExpression
 
 from launch_ros.actions import Node
@@ -14,6 +15,7 @@ def generate_launch_description():
     # Get package's share directory path
     int_brain_description_pkg_share = FindPackageShare('int_brain_description')
     int_brain_system_pkg_share = FindPackageShare('int_brain_system')
+    rplidar_ros_pkg_share = FindPackageShare('rplidar_ros')
 
     rviz_arg = DeclareLaunchArgument("rviz", default_value="true", 
                                      description="Launch RViz2 with the robot model and controllers")
@@ -30,12 +32,52 @@ def generate_launch_description():
         "is_feedforward", default_value="false",
         description="Enable feedforward control for the robot"
     )
+    lidar_arg = DeclareLaunchArgument(
+        "lidar", default_value="true",
+        description="Launch RPLidar A1"
+    )
+    channel_type_arg = DeclareLaunchArgument(
+        'channel_type',
+        default_value='serial',
+        description='Specifying channel type of lidar'
+    )
+    serial_port_arg = DeclareLaunchArgument(
+        'serial_port',
+        default_value='/dev/ttyUSB0',
+        description='Specifying usb port to connected lidar'
+    )
+    serial_baudrate_arg = DeclareLaunchArgument(
+        'serial_baudrate',
+        default_value='115200',
+        description='Specifying usb port baudrate to connected lidar'
+    )
+    frame_id_arg = DeclareLaunchArgument(
+        'frame_id',
+        default_value='lidar_frame',
+        description='Specifying frame_id of lidar'
+    )
+    inverted_arg = DeclareLaunchArgument(
+        'inverted',
+        default_value='false',
+        description='Specifying whether or not to invert scan data'
+    )
+    angle_compensate_arg = DeclareLaunchArgument(
+        'angle_compensate',
+        default_value='true',
+        description='Specifying whether or not to enable angle_compensate of scan data'
+    )
+    scan_mode_arg = DeclareLaunchArgument(
+        'scan_mode',
+        default_value='Sensitivity',
+        description='Specifying scan mode of lidar'
+    )
 
     # Launch Configurations to be used by nodes
     rviz = LaunchConfiguration("rviz")
     drive_type = LaunchConfiguration("drive_type")
     is_feedforward = LaunchConfiguration("is_feedforward")
     debug = LaunchConfiguration("debug")
+    lidar = LaunchConfiguration("lidar")
     rviz_config_file = LaunchConfiguration("rviz_config_file", 
                             default=PathJoinSubstitution([
                                 int_brain_system_pkg_share, 'config', 'view.rviz'
@@ -141,6 +183,17 @@ def generate_launch_description():
         parameters=[ekf_params, robot_description],
     )
 
+    rplidar_a1_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                rplidar_ros_pkg_share,
+                'launch',
+                'rplidar_a1_launch.py'
+            ])
+        ),
+        condition=IfCondition(lidar),
+    )
+
     nodes = [
         control_node,
         robot_state_pub_node,
@@ -149,13 +202,21 @@ def generate_launch_description():
         mecanum_drive_controller_spawner,
         diff_drive_controller_spawner,
         robot_localization,
+        rplidar_a1_launch,
         rviz_node
     ]
 
     arguments = [
         rviz_arg,
         drive_type_arg, is_feedforward_arg,
-        debug_arg
+        debug_arg, lidar_arg,
+        channel_type_arg,
+        serial_port_arg,
+        serial_baudrate_arg,
+        frame_id_arg,
+        inverted_arg,
+        angle_compensate_arg,
+        scan_mode_arg
     ]
 
     return LaunchDescription(arguments+nodes)
