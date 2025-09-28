@@ -1,3 +1,7 @@
 [submodule "dependencies/BotSpeak"]
 	path = dependencies/BotSpeak
 	url = https://github.com/eccentricOrange/BotSpeak.git
+[submodule "dependencies/rplidar_ros"]
+	path = dependencies/rplidar_ros
+	url = https://github.com/Slamtec/rplidar_ros.git
+	branch = ros2
