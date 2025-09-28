@@ -3,7 +3,7 @@
 CONTAINER_WORKSPACE=/home/ubuntu/int_brain_ws
 CONTAINER_NAME="int_brain_container"
 TARGET=$1
-IMAGE_TAG="dev0.11"
+IMAGE_TAG="dev0.12"
 
 if [ -z "$TARGET" ]; then
     echo "Usage: $0 <target>"
