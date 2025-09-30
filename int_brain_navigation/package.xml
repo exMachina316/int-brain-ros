@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>int_brain_system</name>
+  <name>int_brain_navigation</name>
   <version>1.0.0</version>
   <description>URDF description package for 4 mecanum wheel drive bot</description>
   <maintainer email="khandelwalkostubh@gmail.com">Kostubh Khandelwal</maintainer>
@@ -10,26 +10,13 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>sensor_msgs</depend>
 
   <!-- Build dependencies -->
-  <depend>int_brain_description</depend>
   <depend>rviz2</depend>
-  <depend>robot_localization</depend>
-  <depend>xacro</depend>
-  <depend>controller_manager</depend>
-  <depend>controller_interface</depend>
-  <depend>joint_state_broadcaster</depend>
-  <depend>robot_state_publisher</depend>
-  <depend>mecanum_drive_controller</depend>
-  <depend>diff_drive_controller</depend>
-  <depend>twist_stamper</depend>
-  <depend>ros2_control</depend>
+  <depend>slam_toolbox</depend>
 
   <!-- Execution dependencies -->
   <exec_depend>ros2launch</exec_depend>
-  <exec_depend>nav2_velocity_smoother</exec_depend>
-  <exec_depend>nav2_lifecycle_manager</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

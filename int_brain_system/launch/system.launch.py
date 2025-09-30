@@ -71,6 +71,11 @@ def generate_launch_description():
         default_value='Sensitivity',
         description='Specifying scan mode of lidar'
     )
+    stamp_twist_arg = DeclareLaunchArgument(
+        'stamp_twist',
+        default_value='false',
+        description='Enable timestamping of incoming twist messages'
+    )
 
     # Launch Configurations to be used by nodes
     rviz = LaunchConfiguration("rviz")
@@ -78,6 +83,7 @@ def generate_launch_description():
     is_feedforward = LaunchConfiguration("is_feedforward")
     debug = LaunchConfiguration("debug")
     lidar = LaunchConfiguration("lidar")
+    stamp_twist = LaunchConfiguration("stamp_twist")
     rviz_config_file = LaunchConfiguration("rviz_config_file", 
                             default=PathJoinSubstitution([
                                 int_brain_system_pkg_share, 'config', 'view.rviz'
@@ -114,6 +120,11 @@ def generate_launch_description():
     ])
     robot_description = {"robot_description": robot_description_content}
 
+    # Incoming velocity topic based on stamping requirement
+    cmd_vel_topic = PythonExpression(
+        ["'/cmd_vel_stamped' if '", stamp_twist, "' == 'true' else '/cmd_vel'"]
+    )
+
     # Load robot controllers
     control_node = Node(
         package="controller_manager",
@@ -121,8 +132,8 @@ def generate_launch_description():
         parameters=[robot_description, robot_controllers],
         output="screen",
         remappings=[
-            ("/mecanum_drive_controller/reference", "/cmd_vel"),
-            ("/diff_drive_controller/cmd_vel", "/cmd_vel"),
+            ("/mecanum_drive_controller/reference", cmd_vel_topic),
+            ("/diff_drive_controller/cmd_vel", cmd_vel_topic),
             ("/mecanum_drive_controller/tf_odometry", "/tf"),
             ("/mecanum_drive_controller/odometry", "/int_brain/odom"),
             ("/diff_drive_controller/odom", "/int_brain/odom"),
@@ -183,6 +194,16 @@ def generate_launch_description():
         parameters=[ekf_params, robot_description],
     )
 
+    twist_stamper = Node(
+        package="twist_stamper",
+        executable="twist_stamper",
+        name="twist_stamper",
+        output="screen",
+        remappings=[('/cmd_vel_in', '/cmd_vel'),
+                    ('/cmd_vel_out', '/cmd_vel_stamped')],
+        condition=IfCondition(stamp_twist)
+    )
+
     rplidar_a1_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([
@@ -201,6 +222,7 @@ def generate_launch_description():
         imu_broadcaster_spawner,
         mecanum_drive_controller_spawner,
         diff_drive_controller_spawner,
+        twist_stamper,
         # robot_localization,
         rplidar_a1_launch,
         rviz_node
@@ -216,7 +238,8 @@ def generate_launch_description():
         frame_id_arg,
         inverted_arg,
         angle_compensate_arg,
-        scan_mode_arg
+        scan_mode_arg,
+        stamp_twist_arg
     ]
 
     return LaunchDescription(arguments+nodes)

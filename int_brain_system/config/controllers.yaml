@@ -60,8 +60,8 @@ diff_drive_controller:
     pose_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     twist_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-    position_feedback: false
-    open_loop: true
+    position_feedback: true
+    open_loop: false
     enable_odom_tf: true
 
     cmd_vel_timeout: 0.5 # seconds
