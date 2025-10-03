@@ -15,7 +15,7 @@ The documentation for managing the workspace is split into various READMEs, plea
 ### Run NAV2 on SBC
 1. Launch system 
     ```bash
-    ros2 launch int_brain_system system_launch.py rviz:=false stamp_twist:=true
+    ros2 launch int_brain_system system.launch.py rviz:=false stamp_twist:=true
     ```
 
 2. In a new terminal, launch navigation
