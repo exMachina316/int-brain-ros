@@ -1,6 +1,6 @@
 {
     "name": "Host PC",
-    "image": "ghcr.io/eccentricorange/int_brain_host:amd64-dev0.8",
+    "image": "ghcr.io/eccentricorange/int_brain_host:amd64-v1.0",
 
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/ubuntu/int_brain_ws/src,type=bind",
     "workspaceFolder": "/home/ubuntu/int_brain_ws",

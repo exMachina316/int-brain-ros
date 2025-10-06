@@ -1,6 +1,6 @@
 {
     "name": "SBC",
-    "image": "ghcr.io/eccentricorange/int_brain_sbc:aarch64-dev0.8",
+    "image": "ghcr.io/eccentricorange/int_brain_sbc:aarch64-v1.0",
 
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/ubuntu/int_brain_ws/src,type=bind",
     "workspaceFolder": "/home/ubuntu/int_brain_ws",
