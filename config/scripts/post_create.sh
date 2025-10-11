@@ -9,8 +9,15 @@ source /opt/ros/$ROS_DISTRO/setup.bash
 # install dependencies
 cd $WORKSPACE && \
 sudo apt update -y && \
-rosdep update && \
-rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO && \
+rosdep update
+
+## if environment variable PLATFORM is "sbc", skip the "int_brain_gazebo" package
+if [ "$PLATFORM" == "sbc" ]; then
+    sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=int_brain_gazebo
+else
+    sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO
+fi
+
 colcon build --symlink-install
 
 # source script for convenience functions
