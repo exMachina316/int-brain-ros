@@ -13,7 +13,7 @@ rosdep update
 
 ## if environment variable PLATFORM is "sbc", skip the "int_brain_gazebo" package
 if [ "$PLATFORM" == "sbc" ]; then
-    sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO --skip-keys="ros_gz_sim rviz2"
+    sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO --skip-keys="$(cat $WORKSPACE/config/scripts/sbc-rosdep-ignores.txt)"
 else
     sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO
 fi
