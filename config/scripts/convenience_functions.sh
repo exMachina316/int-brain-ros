@@ -9,7 +9,7 @@ alias wsb="cd $WORKSPACE && colcon build --symlink-install && wss"
 # god forsaken rosdep install alias
 ## if environment variable PLATFORM is "sbc", skip the "int_brain_gazebo" package
 if [ "$PLATFORM" == "sbc" ]; then
-    alias rdi="sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=int_brain_gazebo"
+    alias rdi="sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=\"ros_gz_sim\""
 else
     alias rdi="sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO"
 fi
