@@ -11,7 +11,7 @@ alias wsb="cd $WORKSPACE && colcon build --symlink-install && wss"
 if [ "$PLATFORM" == "sbc" ]; then
 
     # Read the keys to ignore from the file into a variable
-    IGNORED_KEYS=$(cat "$WORKSPACE/src/config/scripts/sbc-rosdep-ignores.txt")
+    IGNORED_KEYS=$(cat "$WORKSPACE/src/config/sbc-rosdep-ignores.txt")
     alias rdi="sudo rosdep install -y --from-paths $WORKSPACE/src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=\"$IGNORED_KEYS\""
 
 else
