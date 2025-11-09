@@ -16,5 +16,17 @@
     ],
     
     "initializeCommand": "git submodule update --init --recursive",
-    "postCreateCommand": "$WORKSPACE/src/config/scripts/post_create.sh"
+    "postCreateCommand": "$WORKSPACE/src/config/scripts/post_create.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "Ranch-Hand-Robotics.rde-pack",
+                "ms-python.python",
+                "VisualStudioExptTeam.vscodeintellicode",
+                "ms-azuretools.vscode-containers",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools"
+            ]
+        }
+    }
 }
