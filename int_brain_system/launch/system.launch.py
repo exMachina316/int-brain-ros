@@ -68,7 +68,7 @@ def generate_launch_description():
     )
     scan_mode_arg = DeclareLaunchArgument(
         'scan_mode',
-        default_value='Sensitivity',
+        default_value='Boost',
         description='Specifying scan mode of lidar'
     )
     stamp_twist_arg = DeclareLaunchArgument(
