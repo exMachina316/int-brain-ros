@@ -6,6 +6,10 @@ alias wss="source $WORKSPACE/install/setup.bash && echo \"Sourced workspace\""
 # build workspace alias
 alias wsb="cd $WORKSPACE && colcon build --symlink-install && wss"
 
+# delete build files alias
+alias wsd="rm -rf $WORKSPACE/build $WORKSPACE/install $WORKSPACE/log &&\
+            echo \"Deleted build, install, and log directories.\""
+
 # god forsaken rosdep install alias
 ## if environment variable PLATFORM is "sbc", skip the "int_brain_gazebo" package
 if [ "$PLATFORM" == "sbc" ]; then

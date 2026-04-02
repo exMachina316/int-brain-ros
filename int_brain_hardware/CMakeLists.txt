@@ -27,6 +27,8 @@ add_library(
   int_brain_hardware
   SHARED
   src/actuator_system.cpp
+  src/mcu_comms.cpp
+  src/motor.cpp
 )
 target_compile_features(int_brain_hardware PUBLIC cxx_std_20)
 target_include_directories(int_brain_hardware PUBLIC

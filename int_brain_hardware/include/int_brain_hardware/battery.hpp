@@ -3,21 +3,16 @@
 
 #include <string>
 
-class Battery
-{
-public:
+class Battery {
+   public:
     std::string name_;
     double voltage_;
 
     Battery() = default;
 
-    Battery(const std::string name)
-        : name_(name), voltage_(0.0) {}
+    Battery(const std::string name) : name_(name), voltage_(0.0) {}
 
-    void reset_state()
-    {
-        voltage_ = 0.0;
-    }
+    void reset_state() { voltage_ = 0.0; }
 };
 
-#endif // INT_BRAIN_HARDWARE_BATTERY_HPP
+#endif  // INT_BRAIN_HARDWARE_BATTERY_HPP
