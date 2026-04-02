@@ -3,7 +3,7 @@
 
     <ros2_control name="IntBrainSystem" type="system">
         <hardware>
-            <plugin>int_brain_hardware/IntBrainHardware</plugin>
+            <plugin>int_brain_hardware::IntBrainHardware</plugin>
             <param name="device_addr">/dev/int-brain-316436653034</param>
             <param name="timeout_ms">100</param>
             <param name="is_feedforward">$(arg is_feedforward)</param>

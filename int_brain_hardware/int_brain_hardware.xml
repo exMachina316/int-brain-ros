@@ -1,5 +1,5 @@
 <library path="int_brain_hardware">
-  <class name="int_brain_hardware/IntBrainHardware"
+  <class name="int_brain_hardware::IntBrainHardware"
          type="int_brain_hardware::IntBrainHardware"
          base_class_type="hardware_interface::SystemInterface">
     <description>

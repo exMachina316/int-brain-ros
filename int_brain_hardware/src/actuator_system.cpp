@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "pluginlib/class_list_macros.hpp"
 #include "int_brain_hardware/battery.hpp"
 #include "int_brain_hardware/imu.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -199,14 +200,14 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
 
     // IMU settings
     std::vector<bool> imu_usage = {cfg_.imu_usage};
-    if (comms_.send_data(IMU_USAGE, imu_usage) != 0) {
+    if (comms_.send_config(IMU_USAGE, imu_usage) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set closed loop control on/off");
         return hardware_interface::CallbackReturn::ERROR;
     }
 
     std::vector<bool> imu_sensor_fusion = {cfg_.imu_sensor_fusion};
-    if (comms_.send_data(IMU_SENSOR_FUSION, imu_sensor_fusion) != 0) {
+    if (comms_.send_config(IMU_SENSOR_FUSION, imu_sensor_fusion) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set IMU sensor fusion");
         return hardware_interface::CallbackReturn::ERROR;
@@ -214,7 +215,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
 
     std::vector<uint32_t> imu_sensor_fusion_frequency = {
         cfg_.imu_sensor_fusion_frequency};
-    if (comms_.send_data(IMU_SENSOR_FUSION_FREQUENCY,
+    if (comms_.send_config(IMU_SENSOR_FUSION_FREQUENCY,
                            imu_sensor_fusion_frequency) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set IMU sensor fusion frequency");
@@ -223,7 +224,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
 
     // Encoder settings
     std::vector<bool> encoder_usage = {cfg_.encoder_usage};
-    if (comms_.send_data(ENCODER_USAGE, encoder_usage) != 0) {
+    if (comms_.send_config(ENCODER_USAGE, encoder_usage) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set encoder usage");
         return hardware_interface::CallbackReturn::ERROR;
@@ -231,7 +232,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
 
     std::vector<bool> encoder_velocity_calculation = {
         cfg_.encoder_velocity_calculation};
-    if (comms_.send_data(ENCODER_VELOCITY_CALCULATION,
+    if (comms_.send_config(ENCODER_VELOCITY_CALCULATION,
                            encoder_velocity_calculation) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set encoder velocity calculation");
@@ -240,7 +241,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
 
     std::vector<uint32_t> encoder_velocity_calculation_frequency = {
         cfg_.encoder_velocity_calculation_frequency};
-    if (comms_.send_data(ENCODER_VELOCITY_CALCULATION_FREQUENCY,
+    if (comms_.send_config(ENCODER_VELOCITY_CALCULATION_FREQUENCY,
                            encoder_velocity_calculation_frequency) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set encoder velocity calculation frequency");
@@ -248,7 +249,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
     }
 
     std::vector<uint32_t> encoder_cpr = {cfg_.encoder_cpr};
-    if (comms_.send_data(ENCODER_CPR, encoder_cpr) != 0) {
+    if (comms_.send_config(ENCODER_CPR, encoder_cpr) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set encoder CPR");
         return hardware_interface::CallbackReturn::ERROR;
@@ -257,7 +258,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
     // Motor current measurement settings
     std::vector<bool> motor_current_meas_on_off = {
         cfg_.motor_current_meas_on_off};
-    if (comms_.send_data(MOTOR_CURRENT_MEAS_ON_OFF,
+    if (comms_.send_config(MOTOR_CURRENT_MEAS_ON_OFF,
                            motor_current_meas_on_off) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set motor current measurement on/off");
@@ -266,7 +267,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
 
     std::vector<uint32_t> motor_current_meas_frequency = {
         cfg_.motor_current_meas_frequency};
-    if (comms_.send_data(MOTOR_CURRENT_MEAS_FREQUENCY,
+    if (comms_.send_config(MOTOR_CURRENT_MEAS_FREQUENCY,
                            motor_current_meas_frequency) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set motor current measurement frequency");
@@ -278,7 +279,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
     // the STM32 firmware yet
     //
     // std::vector<bool> battery_voltage_meas_on_off = {false};
-    // if (comms_.send_data(BATTERY_VOLTAGE_MEAS_ON_OFF,
+    // if (comms_.send_config(BATTERY_VOLTAGE_MEAS_ON_OFF,
     // battery_voltage_meas_on_off) != 0) {
     //   RCLCPP_ERROR(
     //       rclcpp::get_logger("IntBrainHardware"),
@@ -287,7 +288,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
     // }
 
     // std::vector<uint32_t> battery_voltage_meas_rate = {200};
-    // if (comms_.send_data(BATTERY_VOLTAGE_MEAS_RATE,
+    // if (comms_.send_config(BATTERY_VOLTAGE_MEAS_RATE,
     // battery_voltage_meas_rate) != 0) {
     //   RCLCPP_ERROR(
     //       rclcpp::get_logger("IntBrainHardware"),
@@ -298,7 +299,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
     // Motor closed loop control settings
     std::vector<MotorControllerMode_TypeDef> motor_control_mode = {
         cfg_.motor_control_mode};
-    if (comms_.send_data(MOTOR_CONTROLLER_MODE, motor_control_mode) != 0) {
+    if (comms_.send_config(MOTOR_CONTROLLER_MODE, motor_control_mode) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set closed loop control on/off");
         return hardware_interface::CallbackReturn::ERROR;
@@ -306,7 +307,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
 
     std::vector<uint32_t> motor_controller_frequency = {
         cfg_.motor_controller_frequency};
-    if (comms_.send_data(MOTOR_CONTROLLER_FREQUENCY,
+    if (comms_.send_config(MOTOR_CONTROLLER_FREQUENCY,
                            motor_controller_frequency) != 0) {
         RCLCPP_ERROR(rclcpp::get_logger("IntBrainHardware"),
                      "Failed to set closed loop control frequency");
@@ -330,25 +331,25 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
     }
 
     // Set PID Configs
-    if (comms_.send_data(MOTOR_PID_KPS, kp_param) != 0) {
+    if (comms_.send_config(MOTOR_PID_KPS, kp_param) != 0) {
         RCLCPP_WARN(rclcpp::get_logger("IntBrainHardware"),
                     "Failed to set Kp: %f, %f, %f, %f", kp_param[0],
                     kp_param[1], kp_param[2], kp_param[3]);
     }
 
-    if (comms_.send_data(MOTOR_PID_KIS, ki_param) != 0) {
+    if (comms_.send_config(MOTOR_PID_KIS, ki_param) != 0) {
         RCLCPP_WARN(rclcpp::get_logger("IntBrainHardware"),
                     "Failed to set Ki: %f, %f, %f, %f", ki_param[0],
                     ki_param[1], ki_param[2], ki_param[3]);
     }
 
-    if (comms_.send_data(MOTOR_PID_KDS, kd_param) != 0) {
+    if (comms_.send_config(MOTOR_PID_KDS, kd_param) != 0) {
         RCLCPP_WARN(rclcpp::get_logger("IntBrainHardware"),
                     "Failed to set Kd: %f, %f, %f, %f", kd_param[0],
                     kd_param[1], kd_param[2], kd_param[3]);
     }
 
-    if (comms_.send_data(MOTOR_PID_FILTER_COEFFS, kd_filter_coeff_param) !=
+    if (comms_.send_config(MOTOR_PID_FILTER_COEFFS, kd_filter_coeff_param) !=
         0) {
         RCLCPP_WARN(rclcpp::get_logger("IntBrainHardware"),
                     "Failed to set Kd filter coeff: %f, %f, %f, %f",
@@ -356,7 +357,7 @@ hardware_interface::CallbackReturn IntBrainHardware::on_configure(
                     kd_filter_coeff_param[2], kd_filter_coeff_param[3]);
     }
 
-    if (comms_.send_data(MOTOR_FEEDFORWARD_PARAMS, ff_param) != 0) {
+    if (comms_.send_config(MOTOR_FEEDFORWARD_PARAMS, ff_param) != 0) {
         RCLCPP_WARN(rclcpp::get_logger("IntBrainHardware"),
                     "Failed to set FF Params: %f, %f, %f, %f, %f, %f, %f, %f: ",
                     ff_param[0], ff_param[1], ff_param[2], ff_param[3],
@@ -534,6 +535,5 @@ hardware_interface::return_type int_brain_hardware ::IntBrainHardware::write(
 
 }  // namespace int_brain_hardware
 
-#include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(int_brain_hardware::IntBrainHardware,
-                       hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(
+  int_brain_hardware::IntBrainHardware, hardware_interface::SystemInterface)

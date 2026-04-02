@@ -2,8 +2,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
-#include "bot_speak.h"
 #include "int_brain_messages.h"
 
 MCUComms::~MCUComms() {
@@ -49,6 +50,7 @@ int MCUComms::req_data(uint8_t request_id, std::vector<T>& pcbData) {
 
     uint8_t dataBuffer[256];
     uint8_t responseBuffer[256];
+    static uint8_t unpacked_frame_buffer[MCU_USB_COMM_PAYLOAD_SIZE];
 
     uint8_t dataLength;
     uint8_t numberElements;
@@ -58,7 +60,7 @@ int MCUComms::req_data(uint8_t request_id, std::vector<T>& pcbData) {
     DataFrame_TypeDef requestFrame = {
         .frameID = 0, .timestamp = 0, .dataLength = 0, .data = NULL};
 
-    DataFrame_TypeDef responseFrame;
+    DataFrame_TypeDef responseFrame = {.data = unpacked_frame_buffer};
 
     switch (request_id) {
         case REQUEST_IMU_ACCEL_RAW:
@@ -186,3 +188,53 @@ int MCUComms::send_data(uint8_t command_id, const std::vector<T>& data) {
     delete[] trasmitBuffer;
     return 0;
 }
+
+template <typename T>
+int MCUComms::send_config(uint8_t command_id, const std::vector<T>& data) {
+    serial_port.FlushIOBuffers();  // Just in case
+
+    T* trasmitBuffer = new T[data.size()];
+    std::copy(data.begin(), data.end(), trasmitBuffer);
+
+    uint8_t dataLength;
+    uint8_t frameLength;
+    uint8_t serializedDataBuffer[256];
+    uint8_t frameBuffer[256];
+
+    botSpeak_serialize(trasmitBuffer, data.size(), sizeof(T),
+                       serializedDataBuffer, &dataLength);
+
+    DataFrame_TypeDef frame = {.frameID = command_id,
+                               .timestamp = 0,
+                               .dataLength = dataLength,
+                               .data = serializedDataBuffer};
+
+    if (botSpeak_packFrame(&frame, frameBuffer, &frameLength) != 0) {
+        std::cerr << "Failed to pack frame" << std::endl;
+        return 1;
+    }
+
+    serial_port.write((const char*)frameBuffer, frameLength);
+
+    // Add 10ms delay to ensure the command is processed
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    return 0;
+}
+
+
+// --- Explicit Template Instantiations ---
+// This tells the compiler to pre-build these specific versions of the templates
+
+// For send_config
+template int MCUComms::send_config<bool>(uint8_t command_id, const std::vector<bool>& data);
+template int MCUComms::send_config<uint32_t>(uint8_t command_id, const std::vector<uint32_t>& data);
+template int MCUComms::send_config<float>(uint8_t command_id, const std::vector<float>& data);
+template int MCUComms::send_config<MotorControllerMode_TypeDef>(uint8_t command_id, const std::vector<MotorControllerMode_TypeDef>& data);
+
+// For req_data
+template int MCUComms::req_data<float>(uint8_t request_id, std::vector<float>& pcbData);
+template int MCUComms::req_data<int64_t>(uint8_t request_id, std::vector<int64_t>& pcbData);
+
+// For send_data
+template int MCUComms::send_data<float>(uint8_t command_id, const std::vector<float>& data);
