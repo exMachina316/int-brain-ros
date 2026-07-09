@@ -11,7 +11,7 @@ class StudyImuNode(Node):
         super().__init__('study_imu')
         
         # Assuming default imu_sensor_broadcaster topic. Change if needed.
-        self.imu_sub = self.create_subscription(Imu, '/imu_sensor/imu', self.imu_callback, 10)
+        self.imu_sub = self.create_subscription(Imu, '/imu_sensor_broadcaster/imu', self.imu_callback, 10)
         
         self.yaw_data = []
         self.wz_data = []
@@ -39,7 +39,7 @@ class StudyImuNode(Node):
         
         self.samples_collected += 1
         
-        if self.samples_collected % 100 == 0:
+        if self.samples_collected % 50 == 0:
             self.get_logger().info(f"Collected {self.samples_collected}/{self.target_samples} samples...")
             
         if self.samples_collected == self.target_samples:

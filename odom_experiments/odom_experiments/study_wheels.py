@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 from nav_msgs.msg import Odometry
 import numpy as np
 import time
@@ -11,8 +11,8 @@ class StudyWheelsNode(Node):
     def __init__(self):
         super().__init__('study_wheels')
         
-        # Based on your system.launch.py remappings
-        self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        # Updated to use TwistStamped for the velocity smoother / mecanum controller
+        self.cmd_pub = self.create_publisher(TwistStamped, '/cmd_vel', 10)
         self.odom_sub = self.create_subscription(Odometry, '/int_brain/odom', self.odom_callback, 10)
         
         self.vx_data = []
@@ -33,7 +33,11 @@ class StudyWheelsNode(Node):
 
     def state_machine(self):
         elapsed = time.time() - self.start_time
-        msg = Twist()
+        
+        # Construct the Stamped message with current ROS time
+        msg = TwistStamped()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.frame_id = 'base_link'
 
         # State 0: Wait before starting
         if elapsed < 3.0:
@@ -44,7 +48,7 @@ class StudyWheelsNode(Node):
             if self.state == 0:
                 self.get_logger().info("Driving Forward at 0.2 m/s...")
                 self.state = 1
-            msg.linear.x = 0.2
+            msg.twist.linear.x = 0.2
             if elapsed > 4.5: # Give it 1.5s to reach steady state before recording
                 self.is_recording = True
 
@@ -53,14 +57,14 @@ class StudyWheelsNode(Node):
             if self.state == 1:
                 self.get_logger().info("Strafing Left at 0.2 m/s...")
                 self.state = 2
-            msg.linear.x = 0.0
-            msg.linear.y = 0.2
+            msg.twist.linear.x = 0.0
+            msg.twist.linear.y = 0.2
             # Keep recording, treating the noise profile as similar
 
         # State 3: Stop and Calculate
         elif elapsed >= 13.0:
-            msg.linear.x = 0.0
-            msg.linear.y = 0.0
+            msg.twist.linear.x = 0.0
+            msg.twist.linear.y = 0.0
             self.cmd_pub.publish(msg)
             self.is_recording = False
             self.calculate_and_exit()

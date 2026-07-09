@@ -2,6 +2,7 @@ ekf_filter_node:
   ros__parameters:
     frequency: 50.0
     two_d_mode: true
+    publish_tf: true
 
     # Frames
     odom_frame: odom
@@ -11,24 +12,35 @@ ekf_filter_node:
     # --- Sensor Inputs ---
     # format: [x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az]
 
+    # 1. Wheels: Listen strictly to X and Y velocities (Mecanum setup)
     odom0: /int_brain/odom
-    odom0_config: [true,  true,  false,
-                   false, false, true,
+    odom0_config: [false, false, false,
                    false, false, false,
+                   true,  true,  false, # vx, vy
                    false, false, false,
                    false, false, false]
     odom0_differential: false
 
+    # 2. LiDAR: Listen strictly to X, Y, and Yaw velocities
+    odom1: /odom_rf2o
+    odom1_config: [false, false, false,
+                   false, false, false,
+                   true,  true,  false, # vx, vy
+                   false, false, true,  # vyaw
+                   false, false, false]
+    odom1_differential: false
+
+    # 3. IMU: Listen to absolute Yaw (Madgwick) and Yaw velocity
     imu0: /imu_sensor_broadcaster/imu
     imu0_config: [false, false, false,
-                  false, false, true,
+                  false, false, true,   # yaw (absolute orientation)
                   false, false, false,
-                  false, false, true,
-                  true, true, false]
+                  false, false, true,   # vyaw (yaw velocity)
+                  false, false, false]  # Ignore linear acceleration for 2D planar motion
     imu0_differential: false
     imu0_remove_gravitational_acceleration: true
     
-    # Example Process Noise Covariance (tune these values for your robot)
+    # Process Noise Covariance (Keep your existing tuned values)
     process_noise_covariance: [0.05, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
                                0.0,    0.05, 0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
                                0.0,    0.0,    0.06, 0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,

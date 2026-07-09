@@ -5,3 +5,6 @@
 	path = dependencies/rplidar_ros
 	url = https://github.com/Slamtec/rplidar_ros.git
 	branch = ros2
+[submodule "dependencies/rf2o_laser_odometry"]
+	path = dependencies/rf2o_laser_odometry
+	url = https://github.com/MAPIRlab/rf2o_laser_odometry.git

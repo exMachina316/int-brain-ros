@@ -21,8 +21,8 @@ imu_sensor_broadcaster:
   ros__parameters:
     sensor_name: imu_sensor
     frame_id: imu_link
-    # static_covariance_angular_velocity: [0.000300, -0.000051, 0.000005, -0.000051, 0.000946, 0.000026, 0.000005, 0.000026, 0.000616]
-    # static_covariance_linear_acceleration: [0.006914, -0.000597, 0.000519, -0.000597, 0.003977, -0.000170, 0.000519, -0.000170, 0.003696]
+    static_covariance_angular_velocity: [0.000300, -0.000051, 0.000005, -0.000051, 0.000946, 0.000026, 0.000005, 0.000026, 0.000655]
+    static_covariance_linear_acceleration: [0.006914, -0.000597, 0.000519, -0.000597, 0.003977, -0.000170, 0.000519, -0.000170, 0.003696]
 
 mecanum_drive_controller:
   ros__parameters:
@@ -34,7 +34,7 @@ mecanum_drive_controller:
     rear_right_wheel_command_joint_name: rear_right_shaft_joint
 
     use_stamped_vel: false
-    enable_odom_tf: true
+    enable_odom_tf: false
 
     kinematics:
       wheels_radius: 0.04
@@ -42,6 +42,9 @@ mecanum_drive_controller:
   
     odom_frame_id: "odom"
     base_frame_id: "base_footprint"
+    
+    pose_covariance_diagonal: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    twist_covariance_diagonal: [0.04061, 0.04463, 0.0, 0.0, 0.0, 0.2]
 
 diff_drive_controller:
   ros__parameters:
@@ -62,7 +65,7 @@ diff_drive_controller:
 
     position_feedback: true
     open_loop: false
-    enable_odom_tf: true
+    enable_odom_tf: false
 
     cmd_vel_timeout: 0.5 # seconds
     velocity_rolling_window_size: 10

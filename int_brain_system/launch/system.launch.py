@@ -143,12 +143,14 @@ def generate_launch_description():
             PythonExpression(["'debug' if '", debug, "' == 'true' else 'info'"])
         ],
     )
+    
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="screen",
         parameters=[robot_description],
     )
+    
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
@@ -205,13 +207,25 @@ def generate_launch_description():
     )
 
     rplidar_a1_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution([
-                rplidar_ros_pkg_share,
-                'launch',
-                'rplidar_a1_launch.py'
-            ])
-        ),
+        PythonLaunchDescriptionSource(PathJoinSubstitution([rplidar_ros_pkg_share, 'launch', 'rplidar_a1_launch.py'])),
+        condition=IfCondition(lidar),
+    )
+
+    # NEW: RF2O Laser Odometry directly integrated
+    rf2o_laser_odometry_node = Node(
+        package='rf2o_laser_odometry',
+        executable='rf2o_laser_odometry_node',
+        name='rf2o_laser_odometry',
+        output='screen',
+        parameters=[{
+            'laser_scan_topic' : '/scan',
+            'odom_topic' : '/odom_rf2o',
+            'publish_tf' : False,               # EKF handles the TF, rf2o must be silent!
+            'base_frame_id' : 'base_footprint', # Matched to controllers.yaml
+            'odom_frame_id' : 'odom',
+            'init_pose_from_topic' : '',
+            'freq' : 20.0
+        }],
         condition=IfCondition(lidar),
     )
 
@@ -223,8 +237,9 @@ def generate_launch_description():
         mecanum_drive_controller_spawner,
         diff_drive_controller_spawner,
         twist_stamper,
-        # robot_localization,
+        robot_localization,           # <-- Now Active
         rplidar_a1_launch,
+        rf2o_laser_odometry_node,     # <-- Added
         rviz_node
     ]
 
@@ -242,4 +257,4 @@ def generate_launch_description():
         stamp_twist_arg
     ]
 
-    return LaunchDescription(arguments+nodes)
+    return LaunchDescription(arguments + nodes)
