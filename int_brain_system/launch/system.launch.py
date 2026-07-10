@@ -75,7 +75,7 @@ def generate_launch_description():
     )
     stamp_twist_arg = DeclareLaunchArgument(
         'stamp_twist',
-        default_value='false',
+        default_value='true',       # <--- Change this from 'false' to 'true'
         description='Enable timestamping of incoming twist messages'
     )
 
@@ -132,7 +132,11 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[robot_description, robot_controllers],
-        output="screen",
+        output="screen",stamp_twist_arg = DeclareLaunchArgument(
+        'stamp_twist',
+        default_value='true',       # <--- Change this from 'false' to 'true'
+        description='Enable timestamping of incoming twist messages'
+        ),
         remappings=[
             ("/mecanum_drive_controller/reference", cmd_vel_topic),
             ("/diff_drive_controller/cmd_vel", cmd_vel_topic),
