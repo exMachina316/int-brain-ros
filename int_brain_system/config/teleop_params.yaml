@@ -41,6 +41,6 @@ velocity_smoother:
     robot_feedback: "OPEN_LOOP"
     max_velocity: [1.3823, 1.3823, 9.0]
     min_velocity: [-1.3823, -1.3823 , -9.0]
-    max_accel: [2.5, 2.5, 13.0]
-    max_decel: [-2.5, -2.5, -13.0]
+    max_accel: [1.0, 1.0, 1.0]
+    max_decel: [-1.0, -1.0, -1.0]
     enable_stamped_cmd_vel: true
