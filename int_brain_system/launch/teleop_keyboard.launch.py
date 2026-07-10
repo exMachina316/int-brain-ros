@@ -32,7 +32,7 @@ def generate_launch_description():
         name='teleop_twist_keyboard_node',
         parameters=[teleop_params],
         remappings=[
-            ('/cmd_vel', '/cmd_vel_raw')
+            ('/cmd_vel', '/cmd_vel_teleop')
         ],
         prefix=['xterm ', '-e']
     )
@@ -64,8 +64,8 @@ def generate_launch_description():
     nodes = [
         teleop_node,
         rviz_node,
-        velocity_smoother_node,
-        lifecycle_manager,
+        # velocity_smoother_node,
+        # lifecycle_manager,
     ]
 
     return LaunchDescription(nodes)
