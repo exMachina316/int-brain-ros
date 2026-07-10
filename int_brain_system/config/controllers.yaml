@@ -33,7 +33,7 @@ mecanum_drive_controller:
     rear_left_wheel_command_joint_name: rear_left_shaft_joint
     rear_right_wheel_command_joint_name: rear_right_shaft_joint
 
-    use_stamped_vel: false
+    use_stamped_vel: true
     enable_odom_tf: false
 
     kinematics:
@@ -65,6 +65,7 @@ diff_drive_controller:
 
     position_feedback: true
     open_loop: false
+    use_stamped_vel: true
     enable_odom_tf: false
 
     cmd_vel_timeout: 0.5 # seconds

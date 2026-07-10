@@ -16,6 +16,8 @@ def generate_launch_description():
     int_brain_description_pkg_share = FindPackageShare('int_brain_description')
     int_brain_system_pkg_share = FindPackageShare('int_brain_system')
     rplidar_ros_pkg_share = FindPackageShare('rplidar_ros')
+    twist_mux_params = PathJoinSubstitution([int_brain_system_pkg_share, "config", "twist_mux.yaml"])
+    teleop_params = PathJoinSubstitution([int_brain_system_pkg_share, "config", "teleop_params.yaml"])
 
     rviz_arg = DeclareLaunchArgument("rviz", default_value="true", 
                                      description="Launch RViz2 with the robot model and controllers")
@@ -194,6 +196,7 @@ def generate_launch_description():
         name="ekf_filter_node",
         output="screen",
         parameters=[ekf_params, robot_description],
+        remappings=[('/odometry/filtered', '/odom')] # <--- ADD THIS LINE
     )
 
     twist_stamper = Node(
@@ -229,6 +232,42 @@ def generate_launch_description():
         condition=IfCondition(lidar),
     )
 
+    # 1. The Traffic Cop
+    twist_mux_node = Node(
+        package='twist_mux',
+        executable='twist_mux',
+        name='twist_mux',
+        output='screen',
+        parameters=[twist_mux_params],
+        remappings=[('/cmd_vel_out', '/cmd_vel_raw')]
+    )
+
+    # 2. The Shared Velocity Smoother
+    velocity_smoother_node = Node(
+        package='nav2_velocity_smoother',
+        executable='velocity_smoother',
+        name='velocity_smoother',
+        output='screen',
+        parameters=[teleop_params],
+        remappings=[
+            ('/cmd_vel', '/cmd_vel_raw'),       # Input from twist_mux
+            ('/cmd_vel_smoothed', '/cmd_vel')   # Output to hardware
+        ]
+    )
+
+    # 3. Add a lifecycle manager just for the smoother (since we removed it from teleop.launch.py)
+    lifecycle_manager_smoother = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_smoother',
+        output='screen',
+        parameters=[{
+            'use_sim_time': False,
+            'autostart': True,
+            'node_names': ['velocity_smoother']
+        }]
+    )
+
     nodes = [
         control_node,
         robot_state_pub_node,
@@ -239,8 +278,11 @@ def generate_launch_description():
         twist_stamper,
         robot_localization,           # <-- Now Active
         rplidar_a1_launch,
-        rf2o_laser_odometry_node,     # <-- Added
-        rviz_node
+        # rf2o_laser_odometry_node,     # <-- Added
+        rviz_node,
+        twist_mux_node,
+        velocity_smoother_node,
+        lifecycle_manager_smoother
     ]
 
     arguments = [
