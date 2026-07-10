@@ -1,7 +1,7 @@
 teleop_twist_joy_node:
   ros__parameters:
     frame: "base_link"
-    publish_stamped_twist: false
+    publish_stamped_twist: true
 
     require_enable_button: false
     enable_turbo_button: 0
@@ -28,7 +28,7 @@ teleop_twist_joy_node:
 teleop_twist_keyboard_node:
   ros__parameters:
     frame_id: "base_link"
-    stamped: false
+    stamped: true
 
 imu_feedback_node:
   ros__parameters:
@@ -43,4 +43,4 @@ velocity_smoother:
     min_velocity: [-1.3823, -1.3823 , -9.0]
     max_accel: [1.0, 1.0, 1.0]
     max_decel: [-1.0, -1.0, -1.0]
-    enable_stamped_cmd_vel: false
+    enable_stamped_cmd_vel: true
