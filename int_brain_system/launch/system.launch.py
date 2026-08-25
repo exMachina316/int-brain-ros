@@ -132,14 +132,13 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[robot_description, robot_controllers],
-        output="screen",stamp_twist_arg = DeclareLaunchArgument(
-        'stamp_twist',
-        default_value='true',       # <--- Change this from 'false' to 'true'
-        description='Enable timestamping of incoming twist messages'
-        ),
+        output="screen",
         remappings=[
-            ("/mecanum_drive_controller/reference", cmd_vel_topic),
-            ("/diff_drive_controller/cmd_vel", cmd_vel_topic),
+            # Hardcode these two to /cmd_vel to catch the smoother's output directly!
+            ("/mecanum_drive_controller/reference", "/cmd_vel"),
+            ("/diff_drive_controller/cmd_vel", "/cmd_vel"),
+            
+            # Keep your odometry remappings the same
             ("/mecanum_drive_controller/tf_odometry", "/tf"),
             ("/mecanum_drive_controller/odometry", "/int_brain/odom"),
             ("/diff_drive_controller/odom", "/int_brain/odom"),
@@ -282,7 +281,7 @@ def generate_launch_description():
         # twist_stamper,
         robot_localization,           # <-- Now Active
         rplidar_a1_launch,
-        # rf2o_laser_odometry_node,     # <-- Added
+        rf2o_laser_odometry_node,     # <-- Added
         rviz_node,
         twist_mux_node,
         velocity_smoother_node,
