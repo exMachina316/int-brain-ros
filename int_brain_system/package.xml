@@ -11,6 +11,7 @@
 
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
+  <depend>twist_mux</depend>
 
   <!-- Build dependencies -->
   <depend>int_brain_description</depend>
@@ -30,6 +31,7 @@
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>nav2_velocity_smoother</exec_depend>
   <exec_depend>nav2_lifecycle_manager</exec_depend>
+  
 
   <export>
     <build_type>ament_cmake</build_type>
