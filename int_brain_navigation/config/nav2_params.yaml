@@ -4,7 +4,7 @@ amcl:
     alpha2: 0.2
     alpha3: 0.2
     alpha4: 0.2
-    alpha5: 0.2
+    alpha5: 0.5
     base_frame_id: "base_footprint"
     beam_skip_distance: 0.5
     beam_skip_error_threshold: 0.9
@@ -13,9 +13,9 @@ amcl:
     global_frame_id: "map"
     lambda_short: 0.1
     laser_likelihood_max_dist: 2.0
-    laser_max_range: 100.0
+    laser_max_range: 10.0
     laser_min_range: -1.0
-    laser_model_type: "likelihood_field"
+    laser_model_type: "likelihood_field_prob"
     max_beams: 60
     max_particles: 2000
     min_particles: 500
@@ -25,11 +25,11 @@ amcl:
     recovery_alpha_fast: 0.0
     recovery_alpha_slow: 0.0
     resample_interval: 1
-    robot_model_type: "nav2_amcl::DifferentialMotionModel"
+    robot_model_type: "nav2_amcl::OmniMotionModel"
     save_pose_rate: 0.5
     sigma_hit: 0.2
     tf_broadcast: true
-    transform_tolerance: 1.0
+    transform_tolerance: 0.2
     update_min_a: 0.2
     update_min_d: 0.25
     z_hit: 0.5
@@ -41,8 +41,8 @@ amcl:
 bt_navigator:
   ros__parameters:
     global_frame: map
-    robot_base_frame: base_link
-    odom_topic: /odom
+    robot_base_frame: base_footprint
+    odom_topic: /odometry/filtered
     bt_loop_duration: 10
     default_server_timeout: 20
     wait_for_service_timeout: 1000
@@ -69,6 +69,7 @@ controller_server:
   ros__parameters:
     controller_frequency: 20.0
     costmap_update_timeout: 0.30
+    use_stamped_vel: true
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
@@ -109,9 +110,9 @@ controller_server:
       vy_std: 0.2
       wz_std: 0.4
 
-      vx_max: 1.3823
-      vx_min: -1.3823
-      vy_max: 1.3823
+      vx_max: 0.5
+      vx_min: -0.5
+      vy_max: 0.5
       wz_max: 7.0
 
       iteration_count: 1
@@ -119,7 +120,7 @@ controller_server:
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "Omni"
+      motion_model: "DiffDrive"
       visualize: false
       regenerate_noises: true
       TrajectoryVisualizer:
@@ -192,9 +193,9 @@ local_costmap:
   local_costmap:
     ros__parameters:
       update_frequency: 5.0
-      publish_frequency: 2.0
+      publish_frequency: 5.0
       global_frame: odom
-      robot_base_frame: base_link
+      robot_base_frame: base_footprint
       rolling_window: true
       width: 3
       height: 3
@@ -236,7 +237,7 @@ global_costmap:
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: base_link
+      robot_base_frame: base_footprint
       robot_radius: 0.20
       resolution: 0.05
       track_unknown_space: true
@@ -261,7 +262,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.20
+        inflation_radius: 2.0
       always_send_full_costmap: True
 
 # The yaml_filename does not need to be specified since it going to be set by defaults in launch.
@@ -280,14 +281,24 @@ map_saver:
 
 planner_server:
   ros__parameters:
-    expected_planner_frequency: 20.0
     planner_plugins: ["GridBased"]
-    costmap_update_timeout: 1.0
+
     GridBased:
-      plugin: "nav2_navfn_planner::NavfnPlanner"
-      tolerance: 0.5
-      use_astar: true
-      allow_unknown: true
+      plugin: "nav2_smac_planner::SmacPlanner2D" # In Iron and older versions, "/" was used instead of "::"
+      tolerance: 0.125                      # tolerance for planning if unable to reach exact pose, in meters
+      downsample_costmap: false             # whether or not to downsample the map
+      downsampling_factor: 1                # multiplier for the resolution of the costmap layer (e.g. 2 on a 5cm costmap would be 10cm)
+      allow_unknown: true                   # allow traveling in unknown space
+      max_iterations: 1000000               # maximum total iterations to search for before failing (in case unreachable), set to -1 to disable
+      max_on_approach_iterations: 1000      # maximum number of iterations to attempt to reach goal once in tolerance
+      max_planning_time: 2.0                # max time in s for planner to plan, smooth
+      cost_travel_multiplier: 2.0           # Cost multiplier to apply to search to steer away from high cost areas. Larger values will place in the center of aisles more exactly (if non-`FREE` cost potential field exists) but take slightly longer to compute. To optimize for speed, a value of 1.0 is reasonable. A reasonable tradeoff value is 2.0. A value of 0.0 effective disables steering away from obstacles and acts like a naive binary search A*.
+      use_final_approach_orientation: true # Whether to set the final path pose at the goal's orientation to the requested orientation (false) or in line with the approach angle so the robot doesn't rotate to heading (true)
+      smoother:
+        max_iterations: 1000
+        w_smooth: 0.3
+        w_data: 0.2
+        tolerance: 1.0e-10
 
 smoother_server:
   ros__parameters:
@@ -318,11 +329,12 @@ behavior_server:
       plugin: "nav2_behaviors::AssistedTeleop"
     local_frame: odom
     global_frame: map
-    robot_base_frame: base_link
+    robot_base_frame: base_footprint
     transform_tolerance: 0.1
     simulate_ahead_time: 2.0
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
+    use_stamped_vel: true
     rotational_acc_lim: 3.2
 
 waypoint_follower:
@@ -369,6 +381,8 @@ collision_monitor:
       max_height: 2.0
       enabled: True
 
+      
+
 docking_server:
   ros__parameters:
     controller_frequency: 50.0
@@ -378,7 +392,7 @@ docking_server:
     undock_linear_tolerance: 0.05
     undock_angular_tolerance: 0.1
     max_retries: 3
-    base_frame: "base_link"
+    base_frame: "base_footprint"
     fixed_frame: "odom"
     dock_backwards: false
     dock_prestaging_tolerance: 0.5
