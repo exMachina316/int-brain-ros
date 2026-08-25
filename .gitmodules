@@ -7,4 +7,5 @@
 	branch = ros2
 [submodule "dependencies/rf2o_laser_odometry"]
 	path = dependencies/rf2o_laser_odometry
-	url = https://github.com/MAPIRlab/rf2o_laser_odometry.git
+	url = https://github.com/mechasolution/rf2o_laser_odometry.git
+	branch = ros2
